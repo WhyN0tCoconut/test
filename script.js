@@ -1,28 +1,27 @@
 document.addEventListener("DOMContentLoaded", () => {
-    // Music + Start button
     const startBtn = document.getElementById("startBtn");
     const music = document.getElementById("bgMusic");
 
+    // ---------- START BUTTON + MUSIC (MOBILE SAFE) ----------
     if (startBtn && music) {
         startBtn.addEventListener("click", () => {
+            music.muted = false;
+            music.volume = 1;
             music.currentTime = 0;
-            music.play().catch(err => console.log("Audio blocked:", err));
 
-            document.getElementById("gallery")
-                ?.scrollIntoView({ behavior: "smooth" });
+            const playPromise = music.play();
+            if (playPromise !== undefined) {
+                playPromise
+                    .then(() => console.log("Music started successfully"))
+                    .catch(err => console.log("Audio blocked on mobile:", err));
+            }
 
+            document.getElementById("gallery")?.scrollIntoView({ behavior: "smooth" });
             startBtn.style.display = "none";
-        });
+        }, { once: true });
     }
 
-    // existing initializers
-    createParticles();
-    initializeAnimation();
-    setupScrollAnimations();
-    setupPhotoCaptionAnimations();
-});
-// Initial particles on page load
-document.addEventListener('DOMContentLoaded', function () {
+    // ---------- INITIALIZERS ----------
     createParticles();
     initializeAnimation();
     setupScrollAnimations();
@@ -34,18 +33,17 @@ document.addEventListener('DOMContentLoaded', function () {
 // =========================
 function createParticles() {
     const particles = document.getElementById('particles');
-    const particleEmojis = ['❤️', '❤️‍🩹', '💝', '💍', '🎉', '🦋','✨', '🌸', '💞'];
+    if (!particles) return;
+
+    const particleEmojis = ['❤️','❤️‍🩹','💝','💍','🎉','🦋','✨','🌸','💞'];
 
     for (let i = 0; i < 15; i++) {
         const particle = document.createElement('div');
         particle.className = 'particle';
         particle.innerHTML = particleEmojis[Math.floor(Math.random() * particleEmojis.length)];
 
-        // random position
         particle.style.left = Math.random() * 100 + '%';
         particle.style.top = Math.random() * 100 + '%';
-
-        // random animation duration and delay
         particle.style.animationDuration = (Math.random() * 3 + 4) + 's';
         particle.style.animationDelay = Math.random() * 2 + 's';
         particles.appendChild(particle);
@@ -53,30 +51,27 @@ function createParticles() {
 }
 
 // =========================
-// Initialize typewriter & fade elements
+// Fade/typewriter
 // =========================
 function initializeAnimation() {
-    const fadeElements = document.querySelectorAll('.fade-in');
-    fadeElements.forEach((el, index) => {
+    document.querySelectorAll('.fade-in').forEach((el, index) => {
         el.style.animationDelay = (index * 0.2) + 's';
     });
 }
 
 // =========================
-// Photo caption fade-in (fixed)
+// Photo captions
 // =========================
 function setupPhotoCaptionAnimations() {
-    const photoCards = document.querySelectorAll('.photo-card');
-
-    photoCards.forEach(card => {
+    document.querySelectorAll('.photo-card').forEach(card => {
         const overlay = card.querySelector('.photo-overlay');
         const caption = card.querySelector('.photo-caption');
 
         const observer = new IntersectionObserver(entries => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
-                    if (overlay) overlay.classList.add('aos-animate-caption');
-                    if (caption) caption.classList.add('aos-animate');
+                    overlay?.classList.add('aos-animate-caption');
+                    caption?.classList.add('aos-animate');
                 }
             });
         }, { threshold: 0.2, rootMargin: "0px 0px -50px 0px" });
@@ -86,7 +81,7 @@ function setupPhotoCaptionAnimations() {
 }
 
 // =========================
-// Scroll animations for other elements
+// Scroll animations
 // =========================
 function setupScrollAnimations() {
     const observerOptions = { threshold: 0.1, rootMargin: '0px 0px -50px 0px' };
@@ -95,53 +90,36 @@ function setupScrollAnimations() {
         entries.forEach(entry => {
             if (entry.isIntersecting) {
                 entry.target.classList.add('aos-animate');
-
-                // special handling for message section
-                if (entry.target.classList.contains('message-card')) {
-                    animateMessageText();
-                }
+                if (entry.target.classList.contains('message-card')) animateMessageText();
             }
         });
     }, observerOptions);
 
-    const elementsToObserve = document.querySelectorAll('[data-aos], .section-title, .message-card');
-    elementsToObserve.forEach(element => {
+    document.querySelectorAll('[data-aos], .section-title, .message-card').forEach(element => {
         observer.observe(element);
-
-        // add delay if set in HTML
         const delay = element.getAttribute('data-delay');
-        if (delay) {
-            element.style.transitionDelay = delay + 'ms';
-        }
+        if (delay) element.style.transitionDelay = delay + 'ms';
     });
 }
 
 // =========================
-// Animate message text
+// Message text animation
 // =========================
 function animateMessageText() {
-    const messageTexts = document.querySelectorAll('.message-text');
-    messageTexts.forEach((text, index) => {
-        setTimeout(() => {
-            text.classList.add('fade-in-animate');
-        }, index * 500);
+    document.querySelectorAll('.message-text').forEach((text, index) => {
+        setTimeout(() => text.classList.add('fade-in-animate'), index * 500);
     });
 }
 
 // =========================
-// Smooth scroll & background music
+// Smooth scroll helper
 // =========================
 function scrollToSection(sectionId) {
-    const section = document.getElementById(sectionId);
-    if (section) {
-        section.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
-
-    
+    document.getElementById(sectionId)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
 // =========================
-// Like button & floating heart
+// Like & floating hearts
 // =========================
 function toggleLike(button) {
     const heartIcon = button.querySelector('.heart-icon');
@@ -158,10 +136,7 @@ function toggleLike(button) {
 function createFloatingHeart(button) {
     const heart = document.createElement('div');
     heart.innerHTML = '❤️';
-    heart.style.position = 'absolute';
-    heart.style.fontSize = '1.5rem';
-    heart.style.pointerEvents = 'none';
-    heart.style.zIndex = '1000';
+    heart.style.cssText = 'position:absolute;font-size:1.5rem;pointer-events:none;z-index:1000';
 
     const rect = button.getBoundingClientRect();
     heart.style.left = rect.left + 'px';
@@ -172,10 +147,7 @@ function createFloatingHeart(button) {
     heart.animate([
         { transform: 'translateY(0px) scale(1)', opacity: 1 },
         { transform: 'translateY(-60px) scale(1.5)', opacity: 0 }
-    ], {
-        duration: 1500,
-        easing: 'ease-out'
-    }).onfinish = () => document.body.removeChild(heart);
+    ], { duration: 1500, easing: 'ease-out' }).onfinish = () => heart.remove();
 }
 
 // =========================
@@ -183,31 +155,27 @@ function createFloatingHeart(button) {
 // =========================
 window.addEventListener('scroll', () => {
     const scrolled = window.pageYOffset;
-    const hero = document.querySelector('.hero');
-    if (hero) hero.style.transform = `translateY(${scrolled * 0.5}px)`;
+    document.querySelector('.hero')?.style.transform = `translateY(${scrolled * 0.5}px)`;
 
-    const particles = document.querySelectorAll('.particle');
-    particles.forEach((particle, index) => {
+    document.querySelectorAll('.particle').forEach((particle, index) => {
         const speed = 0.2 + (index % 3) * 0.1;
         particle.style.transform = `translateY(${scrolled * speed}px)`;
     });
 });
 
 // =========================
-// Mouse movement for floating hearts
+// Mouse movement floating hearts
 // =========================
 document.addEventListener('mousemove', e => {
     const x = e.clientX / window.innerWidth;
     const y = e.clientY / window.innerHeight;
     const moveX = (x - 0.5) * 20;
-    const moveY = (x - 0.5) * 20;
-
-    const floatingHearts = document.querySelector('.floating-hearts');
-    if (floatingHearts) floatingHearts.style.transform = `translate(${moveX}px, ${moveY}px)`;
+    const moveY = (y - 0.5) * 20;
+    document.querySelector('.floating-hearts')?.style.setProperty('transform', `translate(${moveX}px, ${moveY}px)`);
 });
 
 // =========================
-// Button ripple effect
+// Button ripple
 // =========================
 document.querySelectorAll('button').forEach(button => {
     button.addEventListener('click', function(e) {
@@ -218,16 +186,11 @@ document.querySelectorAll('button').forEach(button => {
         const y = e.clientY - rect.top - size / 2;
 
         ripple.style.cssText = `
-            position: absolute;
-            width: ${size}px;
-            height: ${size}px;
-            left: ${x}px;
-            top: ${y}px;
-            background: rgba(255, 255, 255, 0.5);
-            border-radius: 50%;
-            transform: scale(0);
-            animation: ripple 0.6s ease-out;
-            pointer-events: none;
+            position: absolute; width: ${size}px; height: ${size}px;
+            left: ${x}px; top: ${y}px;
+            background: rgba(255,255,255,0.5);
+            border-radius: 50%; transform: scale(0);
+            animation: ripple 0.6s ease-out; pointer-events: none;
         `;
 
         this.style.position = 'relative';
@@ -238,13 +201,9 @@ document.querySelectorAll('button').forEach(button => {
     });
 });
 
-// Add ripple keyframes
+// Ripple keyframes
 const style = document.createElement('style');
-style.textContent = `
-@keyframes ripple {
-    to { transform: scale(2); opacity: 0; }
-}
-`;
+style.textContent = `@keyframes ripple { to { transform: scale(2); opacity: 0; } }`;
 document.head.appendChild(style);
 
 // =========================
@@ -253,8 +212,7 @@ document.head.appendChild(style);
 const photoObserver = new IntersectionObserver(entries => {
     entries.forEach(entry => {
         if (entry.isIntersecting) {
-            const img = entry.target.querySelector('img');
-            if (img) img.style.animation = 'photoEnter 0.8s ease-out forwards';
+            entry.target.querySelector('img')?.style.setProperty('animation','photoEnter 0.8s ease-out forwards');
         }
     });
 }, { threshold: 0.2 });
@@ -266,6 +224,5 @@ photoStyle.textContent = `
 @keyframes photoEnter {
     from { transform: scale(0.8) rotate(-5deg); opacity: 0; }
     to { transform: scale(1) rotate(0deg); opacity: 1; }
-}
-`;
+}`;
 document.head.appendChild(photoStyle);
