@@ -3,164 +3,143 @@ document.addEventListener('DOMContentLoaded', function () {
     createParticles();
     initializeAnimation();
     setupScrollAnimations();
-
+    setupPhotoCaptionAnimations();
 });
 
-//create floating particles
+// =========================
+// Floating Particles
+// =========================
 function createParticles() {
-
     const particles = document.getElementById('particles');
     const particleEmojis = ['❤️', '❤️‍🩹', '💝', '💍', '🎉', '🦋','✨', '🌸', '💞'];
 
-for (let i=0; i<15; i++){
-    const particle = document.createElement('div');
-    particle.className = 'particle';
-    particle.innerHTML = particleEmojis[Math.floor(Math.random() * particleEmojis.length)];
+    for (let i = 0; i < 15; i++) {
+        const particle = document.createElement('div');
+        particle.className = 'particle';
+        particle.innerHTML = particleEmojis[Math.floor(Math.random() * particleEmojis.length)];
 
+        // random position
+        particle.style.left = Math.random() * 100 + '%';
+        particle.style.top = Math.random() * 100 + '%';
 
-//random position
-particle.style.left = Math.random() * 100 + '%';
-particle.style.top = Math.random() * 100 + '%';
-
-
-
-//random animation duration and delay
-
-particle.style.animationDuration = (Math.random() * 3 + 4) + 's';
-particle.style.animationDelay = Math.random() * 2 + 's';
-particles.appendChild(particle);
-
-
+        // random animation duration and delay
+        particle.style.animationDuration = (Math.random() * 3 + 4) + 's';
+        particle.style.animationDelay = Math.random() * 2 + 's';
+        particles.appendChild(particle);
+    }
 }
 
-}
-
-// initialize the typewriter and other animations
+// =========================
+// Initialize typewriter & fade elements
+// =========================
 function initializeAnimation() {
-    //type
-    //add
-    const fadeElement = document.querySelectorAll('.fade-in');
-    fadeElement.forEach((element, index) => {
-        element.style.animationDelay = (index * 0.2) + 's';
-
+    const fadeElements = document.querySelectorAll('.fade-in');
+    fadeElements.forEach((el, index) => {
+        el.style.animationDelay = (index * 0.2) + 's';
     });
-
 }
-// Mobile-friendly photo caption animation
-const photoCaptions = document.querySelectorAll('.photo-card .photo-overlay');
 
-photoCaptions.forEach(caption => {
+// =========================
+// Photo caption fade-in (fixed)
+// =========================
+function setupPhotoCaptionAnimations() {
+    const photoCards = document.querySelectorAll('.photo-card');
+
+    photoCards.forEach(card => {
+        const overlay = card.querySelector('.photo-overlay');
+        const caption = card.querySelector('.photo-caption');
+
+        const observer = new IntersectionObserver(entries => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    if (overlay) overlay.classList.add('aos-animate-caption');
+                    if (caption) caption.classList.add('aos-animate');
+                }
+            });
+        }, { threshold: 0.2, rootMargin: "0px 0px -50px 0px" });
+
+        if (overlay) observer.observe(overlay);
+    });
+}
+
+// =========================
+// Scroll animations for other elements
+// =========================
+function setupScrollAnimations() {
+    const observerOptions = { threshold: 0.1, rootMargin: '0px 0px -50px 0px' };
+
     const observer = new IntersectionObserver(entries => {
         entries.forEach(entry => {
             if (entry.isIntersecting) {
-                entry.target.classList.add('aos-animate-caption');
+                entry.target.classList.add('aos-animate');
+
+                // special handling for message section
+                if (entry.target.classList.contains('message-card')) {
+                    animateMessageText();
+                }
             }
         });
-    }, { threshold: 0.3 });
+    }, observerOptions);
 
-    observer.observe(caption);
-});
-
-//scroll ani
-function setupScrollAnimations() {
-    const observerOptions ={
-        threshold: 0.1,
-        rootMargin: '0px 0px -50px 0px'
-    };
-
-const observer = new IntersectionObserver((entries) => {
-entries.forEach(entry => {
-    if (entry.isIntersecting){
-        entry.target.classList.add('aos-animate');
-
-
-        //special handling
-        if (entry.target.classList.contains('message-card')) {
-
-animateMessageText();
-
-
-        }
-    }
-});
-}, observerOptions);
-
-//observe element
-const elementsToObserve = document.querySelectorAll('[data-aos], .section-title, .message-card');
-     elementsToObserve.forEach(element =>{
+    const elementsToObserve = document.querySelectorAll('[data-aos], .section-title, .message-card');
+    elementsToObserve.forEach(element => {
         observer.observe(element);
 
-        //add delay
+        // add delay if set in HTML
         const delay = element.getAttribute('data-delay');
-        if (delay){
+        if (delay) {
             element.style.transitionDelay = delay + 'ms';
-
         }
-     });
-    }
+    });
+}
 
+// =========================
+// Animate message text
+// =========================
+function animateMessageText() {
+    const messageTexts = document.querySelectorAll('.message-text');
+    messageTexts.forEach((text, index) => {
+        setTimeout(() => {
+            text.classList.add('fade-in-animate');
+        }, index * 500);
+    });
+}
 
-    // animate
-
-    function animateMessageText() {
-        const messageTexts = document.querySelectorAll('.message-text');
-        messageTexts.forEach((text, index) => {
-
-            setTimeout(() => {
-                text.classList.add('fade-in-animate');
-
-            }, index * 500);
-
-        });
-    }
-
-    // smooth scroll
-    function scrollToSection(sectionId) {
+// =========================
+// Smooth scroll & background music
+// =========================
+function scrollToSection(sectionId) {
     const section = document.getElementById(sectionId);
     if (section) {
-        section.scrollIntoView({
-            behavior: 'smooth',
-            block: 'start'
-        });
+        section.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
 
-    // Play background music
     const music = document.getElementById('bg-music');
-    if (music) {
+    if (music && music.paused) {
         music.play().catch(() => {
-            // If autoplay is blocked, do nothing
-            console.log("Autoplay blocked, user interaction needed.");
+            console.log("Autoplay blocked. Tap Start again if needed.");
         });
     }
 }
 
-    //toggle 
-    function toggleLike(button){
-const heartIcon = button.querySelector('.heart-icon');
-button.classList.toggle('liked');
+// =========================
+// Like button & floating heart
+// =========================
+function toggleLike(button) {
+    const heartIcon = button.querySelector('.heart-icon');
+    button.classList.toggle('liked');
 
-if (button.classList.contains('liked'))
-{
-    heartIcon.textContent = '❤️';
-
-    // create floating heart
-    createFloatingHeart(button);
-
-} else {
-    heartIcon.textContent = '🤍';
+    if (button.classList.contains('liked')) {
+        heartIcon.textContent = '❤️';
+        createFloatingHeart(button);
+    } else {
+        heartIcon.textContent = '🤍';
+    }
 }
 
-
-
-    }
-
-
-
-    //create floating heart ani
-    function createFloatingHeart(button)
-{
+function createFloatingHeart(button) {
     const heart = document.createElement('div');
-    heart.innerHTML= '❤️';
+    heart.innerHTML = '❤️';
     heart.style.position = 'absolute';
     heart.style.fontSize = '1.5rem';
     heart.style.pointerEvents = 'none';
@@ -172,166 +151,103 @@ if (button.classList.contains('liked'))
 
     document.body.appendChild(heart);
 
-
-
-// animate the heart
-heart.animate([
-    {transform: 'translateY(0px) scale(1)', opacity: 1},
-
-
-    {transform: 'translateY(-60px) scale(1.5)', opacity: 0  }
-
-
-
-
-], {
-duration: 1500,
-easing: 'ease-out'
-}).onfinish = () => {
-    document.body.removeChild(heart);
-};
-
+    heart.animate([
+        { transform: 'translateY(0px) scale(1)', opacity: 1 },
+        { transform: 'translateY(-60px) scale(1.5)', opacity: 0 }
+    ], {
+        duration: 1500,
+        easing: 'ease-out'
+    }).onfinish = () => document.body.removeChild(heart);
 }
 
-    
+// =========================
+// Parallax & particle scroll
+// =========================
+window.addEventListener('scroll', () => {
+    const scrolled = window.pageYOffset;
+    const hero = document.querySelector('.hero');
+    if (hero) hero.style.transform = `translateY(${scrolled * 0.5}px)`;
 
-// add parallax effect
-window.addEventListener('scroll', () =>{
-
-const scrolled = window.pageYOffset;
-const hero = document.querySelector('.hero');
-const parallaxSpeed = 0.5;
-
-if (hero) {
-    hero.style.transform = `translateY(${scrolled * parallaxSpeed}px)`;
-
-}
-//update particles position
-const particles = document.querySelectorAll('.particle');
-particles.forEach((particle, index) => {
-    const speed = 0.2 + (index % 3) * 0.1;
-    particle.style.transform = `translateY(${scrolled * speed}px)`;
-
-});
-
-
-});
-
-
-
-
-//add mouse movement 
-document.addEventListener('mousemove', (e) => {
-const hero = document.querySelector('.hero');
-if (!hero) return;
-
-const x = e.clientX / window.innerWidth;
-const y = e.clientY / window.innerHeight;
-
-
-const moveX = (x - 0.5) * 20;
-const moveY = (x - 0.5) * 20;
-
-const floatingHearts = document.querySelector('.floating-hearts');
-if (floatingHearts){
-    floatingHearts.style.transform = `translate(${moveX}px, ${moveY}px)`;
-}
-
-});
-
- //add clicl efect
- document.querySelectorAll('button').forEach(button =>{
-    button.addEventListener('click', function (e){
-const ripple = document.createElement('span');
-const rect = this.getBoundingClientRect();
-const size = Math.max(rect.width, rect.height);
-const x = e.clientX - rect.left - size /2;
-const y = e.clientY - rect.top - size /2;
-
-ripple.style.cssText = `
-position: absolute;
-width: ${size}px;
-height: ${size}px;
-left: ${x}px;
-top: ${y}px;
-background: rgba(255, 255, 255, 0.5);
-border-radius: 50%;
-transform: scale(0);
-animation: ripple 0.6s ease-out;
-pointer-events: none;
-
-`;
-
-this.style.position = 'relative';
-this.style.overflow = 'hidden';
-this.appendChild(ripple);
-
-setTimeout(() =>{
-    ripple.remove();
-
-},600);
-
-
-
+    const particles = document.querySelectorAll('.particle');
+    particles.forEach((particle, index) => {
+        const speed = 0.2 + (index % 3) * 0.1;
+        particle.style.transform = `translateY(${scrolled * speed}px)`;
     });
- });
+});
 
-// add riple animation
+// =========================
+// Mouse movement for floating hearts
+// =========================
+document.addEventListener('mousemove', e => {
+    const x = e.clientX / window.innerWidth;
+    const y = e.clientY / window.innerHeight;
+    const moveX = (x - 0.5) * 20;
+    const moveY = (x - 0.5) * 20;
 
+    const floatingHearts = document.querySelector('.floating-hearts');
+    if (floatingHearts) floatingHearts.style.transform = `translate(${moveX}px, ${moveY}px)`;
+});
+
+// =========================
+// Button ripple effect
+// =========================
+document.querySelectorAll('button').forEach(button => {
+    button.addEventListener('click', function(e) {
+        const ripple = document.createElement('span');
+        const rect = this.getBoundingClientRect();
+        const size = Math.max(rect.width, rect.height);
+        const x = e.clientX - rect.left - size / 2;
+        const y = e.clientY - rect.top - size / 2;
+
+        ripple.style.cssText = `
+            position: absolute;
+            width: ${size}px;
+            height: ${size}px;
+            left: ${x}px;
+            top: ${y}px;
+            background: rgba(255, 255, 255, 0.5);
+            border-radius: 50%;
+            transform: scale(0);
+            animation: ripple 0.6s ease-out;
+            pointer-events: none;
+        `;
+
+        this.style.position = 'relative';
+        this.style.overflow = 'hidden';
+        this.appendChild(ripple);
+
+        setTimeout(() => ripple.remove(), 600);
+    });
+});
+
+// Add ripple keyframes
 const style = document.createElement('style');
 style.textContent = `
 @keyframes ripple {
-to {
-transform: scale(2);
-opacity: 0;
-
+    to { transform: scale(2); opacity: 0; }
 }
-}
-
 `;
 document.head.appendChild(style);
 
-
-
-//add entrance animation
-const photoObserver = new IntersectionObserver((entries) =>{
+// =========================
+// Photo enter animation
+// =========================
+const photoObserver = new IntersectionObserver(entries => {
     entries.forEach(entry => {
-if (entry.isIntersecting){
-
-    const img = entry.target.querySelector('img');
-    if(img){
-
-        img.style.animation = 'photoEnter 0.8s ease-out forwards';
-
-    }
-}
-
+        if (entry.isIntersecting) {
+            const img = entry.target.querySelector('img');
+            if (img) img.style.animation = 'photoEnter 0.8s ease-out forwards';
+        }
     });
-}, { threshold: 0.2});
+}, { threshold: 0.2 });
 
-// observe all photo cards
+document.querySelectorAll('.photo-card').forEach(card => photoObserver.observe(card));
 
-document.querySelectorAll('.photo-card').forEach(card => {
-    photoObserver.observe(card);
-});
-
-//add photo enter animation
 const photoStyle = document.createElement('style');
 photoStyle.textContent = `
 @keyframes photoEnter {
-from {
-transform: scale(0.8) rotate(-5deg);
-opacity: 0;
-}
-to {
-transform: scale(1) rotate(0deg);
-opacity: 1;
-}
+    from { transform: scale(0.8) rotate(-5deg); opacity: 0; }
+    to { transform: scale(1) rotate(0deg); opacity: 1; }
 }
 `;
 document.head.appendChild(photoStyle);
-
-
-
-
-
