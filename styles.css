@@ -518,18 +518,25 @@ footer {
 /*responsive design*/
 
 @media (max-width: 768px) {
-    .typewriter{
-        white-space: normal;
-        border-right: none;
-        animation: none;
-        width: auto;
+    .typewriter {
+        white-space: nowrap;
+        border-right: 3px solid #8b3a3a; /* keep cursor */
+        animation: typewriter 1.5s steps(26) 0.3s forwards, blink 0.5s infinite;
+        width: 0;
     }
+
+    .cta-button {
+        padding: 12px 24px;
+        font-size: 1rem;
+        animation: fadeInUp 1s ease 1s forwards; /* faster appearance */
+    }
+}
 .gallery-grid {
     grid-template-columns: 1fr;
     gap: 20px;
 }
 .photo-container {
-    height: 250px;
+    height: 370px;
 }
 .message-card {
     padding: 40px 20px;
