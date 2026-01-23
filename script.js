@@ -46,6 +46,20 @@ function initializeAnimation() {
     });
 
 }
+// Mobile-friendly photo caption animation
+const photoCaptions = document.querySelectorAll('.photo-card .photo-overlay');
+
+photoCaptions.forEach(caption => {
+    const observer = new IntersectionObserver(entries => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('aos-animate-caption');
+            }
+        });
+    }, { threshold: 0.3 });
+
+    observer.observe(caption);
+});
 
 //scroll ani
 function setupScrollAnimations() {
@@ -101,18 +115,24 @@ const elementsToObserve = document.querySelectorAll('[data-aos], .section-title,
     }
 
     // smooth scroll
-    function scrollToSection(sectionId){
-const section = document.getElementById(sectionId);
-if (section){
-    section.scrollIntoView({
-behavior: 'smooth',
-block: 'start'
-
-
-    });
-}
-
+    function scrollToSection(sectionId) {
+    const section = document.getElementById(sectionId);
+    if (section) {
+        section.scrollIntoView({
+            behavior: 'smooth',
+            block: 'start'
+        });
     }
+
+    // Play background music
+    const music = document.getElementById('bg-music');
+    if (music) {
+        music.play().catch(() => {
+            // If autoplay is blocked, do nothing
+            console.log("Autoplay blocked, user interaction needed.");
+        });
+    }
+}
 
     //toggle 
     function toggleLike(button){
