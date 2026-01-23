@@ -1,253 +1,440 @@
-// Initial particles on page load
-document.addEventListener('DOMContentLoaded', function () {
-    createParticles();
-    initializeAnimation();
-    setupScrollAnimations();
-    setupPhotoCaptionAnimations();
-});
+/* reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
 
-// =========================
-// Floating Particles
-// =========================
-function createParticles() {
-    const particles = document.getElementById('particles');
-    const particleEmojis = ['❤️', '❤️‍🩹', '💝', '💍', '🎉', '🦋','✨', '🌸', '💞'];
+body {
+    font-family: 'Poppins', sans-serif;
+    line-height: 1.6;
+    color: #333;
+    overflow-x: hidden;
+    scroll-behavior: smooth;
+}
 
-    for (let i = 0; i < 15; i++) {
-        const particle = document.createElement('div');
-        particle.className = 'particle';
-        particle.innerHTML = particleEmojis[Math.floor(Math.random() * particleEmojis.length)];
+/* background particles */
+.particles {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 1;
+}
 
-        // random position
-        particle.style.left = Math.random() * 100 + '%';
-        particle.style.top = Math.random() * 100 + '%';
+.particle {
+    position: absolute;
+    font-size: 22px;
+    opacity: 0.8;
+    animation: float 6s ease-in-out infinite;
+}
 
-        // random animation duration and delay
-        particle.style.animationDuration = (Math.random() * 3 + 4) + 's';
-        particle.style.animationDelay = Math.random() * 2 + 's';
-        particles.appendChild(particle);
+@keyframes float {
+    0%, 100% { transform: translateY(0px) rotate(0deg); }
+    25% { transform: translateY(-20px) rotate(5deg); }
+    50% { transform: translateY(-10px) rotate(-5deg); }
+    75% { transform: translateY(-30px) rotate(3deg); }
+}
+
+/* hero section */
+.hero {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 50%, #fecfef 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.hero::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: radial-gradient(circle at 30% 20%, rgba(255, 182, 193, 0.3) 0%, transparent 70%), 
+                radial-gradient(circle at 70% 80%, rgba(255, 192, 203, 0.2) 0%, transparent 70%);
+    pointer-events: none;
+}
+
+.hero-content {
+    text-align: center;
+    z-index: 2;
+    position: relative;
+    padding: 0 20px;
+}
+
+.typewriter {
+    font-family: 'Dancing Script', cursive;
+    font-size: clamp(2.5rem, 6vw, 5rem);
+    font-weight: 700;
+    color: #8b3a3a;
+    margin-bottom: 20px;
+    white-space: nowrap;
+    overflow: hidden;
+    border-right: 3px solid #8b3a3a;
+    animation: typewriter 1.5s steps(26) 0.3s forwards, blink 0.6s infinite;
+    width: 0;
+}
+
+@keyframes typewriter { to { width: 100%; } }
+@keyframes blink {
+    0%, 50% { border-color: #8b3a3a; }
+    51%, 100% { border-color: transparent; }
+}
+
+.subtitle {
+    font-size: clamp(1.1rem, 2.5vw, 1.5rem);
+    color: #8b3a3a;
+    margin-bottom: 40px;
+    opacity: 0;
+    animation: fadeInUp 1s ease 3s forwards;
+}
+
+.floating-hearts {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin: 40px 0;
+    opacity: 0;
+    animation: fadeInUp 1s ease 4s forwards;
+}
+
+.heart {
+    font-size: 2rem;
+    animation: bounce 2s ease-in-out infinite;
+}
+
+.heart:nth-child(1){ animation-delay: 0s; }
+.heart:nth-child(2){ animation-delay: 0.2s; }
+.heart:nth-child(3){ animation-delay: 0.4s; }
+.heart:nth-child(4){ animation-delay: 0.6s; }
+.heart:nth-child(5){ animation-delay: 0.8s; }
+
+@keyframes bounce {
+    0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+    40% { transform: translateY(-20px); }
+    60% { transform: translateY(-10px); }
+}
+
+.cta-button {
+    background: linear-gradient(45deg, #ff6b6b, #ff8e8e);
+    color: white;
+    border: none;
+    padding: 15px 30px;
+    font-size: 1.2rem;
+    font-weight: 600;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 10px 30px rgba(255, 107, 107, 0.3);
+    opacity: 0;
+    animation: fadeInUp 0.8s ease 1.8s forwards;
+}
+
+.cta-button:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 40px rgba(255, 107, 107, 0.4);
+    background: linear-gradient(45deg, #ff5555, #ff7777);
+}
+
+.scroll-indicator {
+    position: absolute;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    opacity: 0;
+    animation: fadeInUp 1s ease 6s forwards;
+}
+
+.scroll-arrow {
+    width: 30px;
+    height: 50px;
+    border: 2px solid #8b3a3a;
+    border-radius: 25px;
+    position: relative;
+}
+
+.scroll-arrow::before {
+    content: '';
+    position: absolute;
+    top: 8px; left: 50%;
+    transform: translateX(-50%);
+    width: 6px; height: 6px;
+    background: #8b3a3a;
+    border-radius: 50%;
+    animation: scrollDot 2s ease-in-out infinite;
+}
+
+@keyframes scrollDot {
+    0% { top: 8px; opacity: 1; }
+    100% { top: 32px; opacity: 0; }
+}
+
+/* gallery section */
+.gallery-section {
+    padding: 100px 0;
+    background: linear-gradient(180deg, #fff5f5 0%, #fef7f7 100%);
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+.section-title {
+    font-family: 'Dancing Script', cursive;
+    font-size: clamp(2.5rem, 5vw, 4rem);
+    color: #8b3a3a;
+    text-align: center;
+    margin-bottom: 60px;
+    opacity: 0;
+    transform: translateY(50px);
+    transition: all 0.6s ease;
+}
+
+.section-title.aos-animate { opacity: 1; transform: translateY(0); }
+
+.gallery-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 30px;
+    padding: 20px 0;
+}
+
+.photo-card {
+    opacity: 0;
+    transform: translateY(50px);
+    transition: all 0.6s ease;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+.photo-card.aos-animate { opacity: 1; transform: translateY(0); }
+
+.photo-container {
+    position: relative;
+    overflow: hidden;
+    border-radius: 20px;
+    height: 300px;
+}
+
+.photo-container img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+}
+
+.photo-container:hover img { transform: scale(1.1) rotate(2deg); }
+
+/* photo overlay + captions */
+.photo-overlay {
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.7) 100%);
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: 20px;
+    transform: translateY(20px);
+    opacity: 0;
+    transition: transform 0.6s ease, opacity 0.6s ease;
+}
+
+.photo-container:hover .photo-overlay {
+    transform: none;
+    opacity: unset; /* remove override */
+}
+
+
+.photo-overlay.aos-animate-caption {
+    transform: translateY(0);
+    opacity: 1;
+}
+
+.photo-caption {
+    color: white;
+    font-size: 1.1rem;
+    font-weight: 500;
+    margin-bottom: 10px;
+    transform: translateY(20px);
+    opacity: 0;
+        transition: transform 0.6s ease, opacity 0.6s ease;
+}
+
+.photo-caption.aos-animate {
+    transform: translateY(0);
+    opacity: 1;
+}
+
+/* like button */
+.like-btn {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 1.5rem;
+    cursor: pointer;
+    align-self: flex-end;
+    transition: transform 0.3s ease;
+}
+
+.like-btn:hover { transform: scale(1.2); }
+.like-btn.liked .heart-icon { color: #ff6b6b; }
+
+/* video section */
+.video-section {
+    padding: 100px 0;
+    background: linear-gradient(180deg, #fff5f5 0%, #fef7f7 100%);
+}
+
+.video-card {
+    opacity: 0;
+    transform: translateY(50px);
+    transition: all 0.6s ease;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+.video-card.aos-animate { opacity: 1; transform: translateY(0); }
+
+.video-card video {
+    width: 100%;
+    height: 300px;
+    object-fit: cover;
+    border-radius: 20px;
+    transition: transform 0.5s ease;
+}
+
+.video-card:hover video { transform: scale(1.1) rotate(2deg); }
+
+/* message section */
+.message-section {
+    padding: 100px 0;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+}
+
+.message-card {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(20px);
+    border-radius: 30px;
+    padding: 60px 40px;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+    border: 1px solid rgba(255,255,255,0.2);
+    text-align: center;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.message-title {
+    font-family: 'Dancing Script', cursive;
+    font-size: clamp(2rem, 4vw, 3rem);
+    margin-bottom: 40px;
+    color: #fff;
+}
+
+.message-text {
+    font-size: 1.1rem;
+    line-height: 1.8;
+    margin-bottom: 20px;
+    opacity: 0;
+    transform: translateY(30px);
+    transition: all 0.6s ease;
+}
+
+.message-text.fade-in-animate {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.message-signature {
+    font-family: 'Marck Script';
+    font-size: 1.3rem;
+    font-weight: 400;
+    line-height: 1.9;
+    margin-top: 30px;
+    color: #ffeb3b;
+}
+
+.message-hearts {
+    margin-top: 30px;
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+}
+
+.heart-animation {
+    font-size: 2rem;
+    animation: heartBeat 1.5s ease-in-out infinite;
+}
+
+.heart-animation:nth-child(1){ animation-delay: 0s; }
+.heart-animation:nth-child(2){ animation-delay: 0.3s; }
+.heart-animation:nth-child(3){ animation-delay: 0.6s; }
+
+@keyframes heartBeat {
+    0%, 100% { transform: scale(1); }
+    25% { transform: scale(1.2); }
+    50% { transform: scale(1.1); }
+}
+
+/* footer */
+footer {
+    background: #FFD7D9;
+    color: #8b3a3a;
+    text-align: center;
+    padding: 30px 0;
+}
+
+/* fade in animation */
+.fade-in { opacity: 0; animation: fadeInUp 1s ease forwards; }
+
+@keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* responsive design */
+@media (max-width: 768px) {
+    .photo-caption, .photo-overlay {
+        /* fade in on scroll using aos-animate class */
+        opacity: 0;
+        transform: translateY(20px);
     }
-}
 
-// =========================
-// Initialize typewriter & fade elements
-// =========================
-function initializeAnimation() {
-    const fadeElements = document.querySelectorAll('.fade-in');
-    fadeElements.forEach((el, index) => {
-        el.style.animationDelay = (index * 0.2) + 's';
-    });
-}
-
-// =========================
-// Photo caption fade-in (fixed)
-// =========================
-function setupPhotoCaptionAnimations() {
-    const photoCards = document.querySelectorAll('.photo-card');
-
-    photoCards.forEach(card => {
-        const overlay = card.querySelector('.photo-overlay');
-        const caption = card.querySelector('.photo-caption');
-
-        const observer = new IntersectionObserver(entries => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    if (overlay) overlay.classList.add('aos-animate-caption');
-                    if (caption) caption.classList.add('aos-animate');
-                }
-            });
-        }, { threshold: 0.2, rootMargin: "0px 0px -50px 0px" });
-
-        if (overlay) observer.observe(overlay);
-    });
-}
-
-// =========================
-// Scroll animations for other elements
-// =========================
-function setupScrollAnimations() {
-    const observerOptions = { threshold: 0.1, rootMargin: '0px 0px -50px 0px' };
-
-    const observer = new IntersectionObserver(entries => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                entry.target.classList.add('aos-animate');
-
-                // special handling for message section
-                if (entry.target.classList.contains('message-card')) {
-                    animateMessageText();
-                }
-            }
-        });
-    }, observerOptions);
-
-    const elementsToObserve = document.querySelectorAll('[data-aos], .section-title, .message-card');
-    elementsToObserve.forEach(element => {
-        observer.observe(element);
-
-        // add delay if set in HTML
-        const delay = element.getAttribute('data-delay');
-        if (delay) {
-            element.style.transitionDelay = delay + 'ms';
-        }
-    });
-}
-
-// =========================
-// Animate message text
-// =========================
-function animateMessageText() {
-    const messageTexts = document.querySelectorAll('.message-text');
-    messageTexts.forEach((text, index) => {
-        setTimeout(() => {
-            text.classList.add('fade-in-animate');
-        }, index * 500);
-    });
-}
-
-// =========================
-// Smooth scroll & background music
-// =========================
-function scrollToSection(sectionId) {
-    const section = document.getElementById(sectionId);
-    if (section) {
-        section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    .photo-caption.aos-animate,
+    .photo-overlay.aos-animate-caption {
+        opacity: 1;
+        transform: translateY(0);
     }
 
-    const music = document.getElementById('bg-music');
-    if (music && music.paused) {
-        music.play().catch(() => {
-            console.log("Autoplay blocked. Tap Start again if needed.");
-        });
+    .typewriter {
+        white-space: normal;
+        font-size: clamp(1.5rem, 4vw, 2.5rem);
+        width: auto;
+        max-width: 100%;
+        animation: typewriter 1.5s steps(24) 0.3s forwards, blink 0.5s infinite;
     }
-}
 
-// =========================
-// Like button & floating heart
-// =========================
-function toggleLike(button) {
-    const heartIcon = button.querySelector('.heart-icon');
-    button.classList.toggle('liked');
-
-    if (button.classList.contains('liked')) {
-        heartIcon.textContent = '❤️';
-        createFloatingHeart(button);
-    } else {
-        heartIcon.textContent = '🤍';
+    .cta-button {
+        padding: 12px 24px;
+        font-size: 1rem;
+        animation: fadeInUp 1s ease 1s forwards;
     }
+
+    .floating-hearts { flex-wrap: wrap; gap: 10px; }
+    .heart { font-size: 1.5rem; }
+    .gallery-grid { grid-template-columns: 1fr; gap: 20px; }
+    .photo-container { height: 370px; }
+    .message-card { padding: 40px 20px; margin: 0 20px; }
 }
 
-function createFloatingHeart(button) {
-    const heart = document.createElement('div');
-    heart.innerHTML = '❤️';
-    heart.style.position = 'absolute';
-    heart.style.fontSize = '1.5rem';
-    heart.style.pointerEvents = 'none';
-    heart.style.zIndex = '1000';
-
-    const rect = button.getBoundingClientRect();
-    heart.style.left = rect.left + 'px';
-    heart.style.top = rect.top + 'px';
-
-    document.body.appendChild(heart);
-
-    heart.animate([
-        { transform: 'translateY(0px) scale(1)', opacity: 1 },
-        { transform: 'translateY(-60px) scale(1.5)', opacity: 0 }
-    ], {
-        duration: 1500,
-        easing: 'ease-out'
-    }).onfinish = () => document.body.removeChild(heart);
+@media (max-width: 480px) {
+    .hero-content { padding: 0 15px; }
+    .section-title { margin-bottom: 40px; }
 }
-
-// =========================
-// Parallax & particle scroll
-// =========================
-window.addEventListener('scroll', () => {
-    const scrolled = window.pageYOffset;
-    const hero = document.querySelector('.hero');
-    if (hero) hero.style.transform = `translateY(${scrolled * 0.5}px)`;
-
-    const particles = document.querySelectorAll('.particle');
-    particles.forEach((particle, index) => {
-        const speed = 0.2 + (index % 3) * 0.1;
-        particle.style.transform = `translateY(${scrolled * speed}px)`;
-    });
-});
-
-// =========================
-// Mouse movement for floating hearts
-// =========================
-document.addEventListener('mousemove', e => {
-    const x = e.clientX / window.innerWidth;
-    const y = e.clientY / window.innerHeight;
-    const moveX = (x - 0.5) * 20;
-    const moveY = (x - 0.5) * 20;
-
-    const floatingHearts = document.querySelector('.floating-hearts');
-    if (floatingHearts) floatingHearts.style.transform = `translate(${moveX}px, ${moveY}px)`;
-});
-
-// =========================
-// Button ripple effect
-// =========================
-document.querySelectorAll('button').forEach(button => {
-    button.addEventListener('click', function(e) {
-        const ripple = document.createElement('span');
-        const rect = this.getBoundingClientRect();
-        const size = Math.max(rect.width, rect.height);
-        const x = e.clientX - rect.left - size / 2;
-        const y = e.clientY - rect.top - size / 2;
-
-        ripple.style.cssText = `
-            position: absolute;
-            width: ${size}px;
-            height: ${size}px;
-            left: ${x}px;
-            top: ${y}px;
-            background: rgba(255, 255, 255, 0.5);
-            border-radius: 50%;
-            transform: scale(0);
-            animation: ripple 0.6s ease-out;
-            pointer-events: none;
-        `;
-
-        this.style.position = 'relative';
-        this.style.overflow = 'hidden';
-        this.appendChild(ripple);
-
-        setTimeout(() => ripple.remove(), 600);
-    });
-});
-
-// Add ripple keyframes
-const style = document.createElement('style');
-style.textContent = `
-@keyframes ripple {
-    to { transform: scale(2); opacity: 0; }
-}
-`;
-document.head.appendChild(style);
-
-// =========================
-// Photo enter animation
-// =========================
-const photoObserver = new IntersectionObserver(entries => {
-    entries.forEach(entry => {
-        if (entry.isIntersecting) {
-            const img = entry.target.querySelector('img');
-            if (img) img.style.animation = 'photoEnter 0.8s ease-out forwards';
-        }
-    });
-}, { threshold: 0.2 });
-
-document.querySelectorAll('.photo-card').forEach(card => photoObserver.observe(card));
-
-const photoStyle = document.createElement('style');
-photoStyle.textContent = `
-@keyframes photoEnter {
-    from { transform: scale(0.8) rotate(-5deg); opacity: 0; }
-    to { transform: scale(1) rotate(0deg); opacity: 1; }
-}
-`;
-document.head.appendChild(photoStyle);
