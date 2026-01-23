@@ -32,10 +32,8 @@ rel="stylesheet">
             <div class="heart">💞</div>
             <div class="heart">😘</div>
         </div>
-        <button class="cta-button" id="startBtn">
-    Start the Celebration 🎉🥳❤️
-</button>
-       <audio id="bgMusic" src="bachabhayo.mp3" loop playsinline></audio>
+<button id="startBtn" class="cta-button">Start the Celebration 🎉🥳❤️</button>
+<audio id="bgMusic" src="bachabhayo.mp3" preload="auto" playsinline loop></audio>
         </div>
         <div class="scroll-indicator">
             <div class="scroll-arrow"></div>
@@ -220,7 +218,31 @@ I love you so much, and I’m changing with honesty this time. If life ever give
 <script src="script.js"></script>
 
 
+  <script>
+document.addEventListener("DOMContentLoaded", () => {
+    const startBtn = document.getElementById("startBtn");
+    const music = document.getElementById("bgMusic");
 
+    startBtn.addEventListener("click", () => {
+        music.currentTime = 0;
+        music.play()
+            .then(() => {
+                console.log("Music started 🎵");
+            })
+            .catch(err => {
+                console.log("Mobile blocked audio:", err);
+            });
+
+        // optional: hide button after click
+        startBtn.style.display = "none";
+
+        // optional: scroll to next section
+        document.querySelector(".gallery-section")?.scrollIntoView({
+            behavior: "smooth"
+        });
+    });
+});
+</script>
   
 
 </body>
