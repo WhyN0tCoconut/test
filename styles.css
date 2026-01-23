@@ -519,17 +519,21 @@ footer {
 
 @media (max-width: 768px) {
     .typewriter {
-        white-space: nowrap;
-        font-size: clamp(1.5rem, 4vw, 2.5rem);
-        border-right: 3px solid #8b3a3a; /* keep cursor */
+        white-space: normal; /* allow wrapping */
+        font-size: clamp(1.5rem, 4vw, 2.5rem); /* smaller font on mobile */
+        width: auto;
+        border-right: 3px solid #8b3a3a;
         animation: typewriter 1.5s steps(26) 0.3s forwards, blink 0.5s infinite;
-        width: 0;
+    }
+
+    .typewriter .line-break {
+        display: block; /* moves to next line */
     }
 
     .cta-button {
         padding: 12px 24px;
         font-size: 1rem;
-        animation: fadeInUp 1s ease 1s forwards; /* faster appearance */
+        animation: fadeInUp 1s ease 1s forwards; /* faster button animation */
     }
 }
 .gallery-grid {
