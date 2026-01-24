@@ -253,7 +253,9 @@ body {
     transition: transform 0.5s ease;
 }
 
-.photo-container:hover img { transform: scale(1.1) rotate(2deg); }
+.photo-container:hover img { transform: scale(1.1) rotate(2deg); 
+transition: transform 0.3s ease;
+}
 
 /* photo overlay + captions */
 .photo-overlay {
