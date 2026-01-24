@@ -68,24 +68,31 @@ document.addEventListener("DOMContentLoaded", () => {
     // Photo Caption Animations
     // =========================
     function setupPhotoCaptionAnimations() {
-        const photoCards = document.querySelectorAll('.photo-card');
+  const observer = new IntersectionObserver(
+    entries => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const overlay = entry.target.querySelector('.photo-overlay');
+          const caption = entry.target.querySelector('.photo-caption');
 
-        photoCards.forEach(card => {
-            const overlay = card.querySelector('.photo-overlay');
-            const caption = card.querySelector('.photo-caption');
+          overlay?.classList.add('aos-animate-caption');
+          caption?.classList.add('aos-animate');
 
-            const observer = new IntersectionObserver(entries => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        overlay?.classList.add('aos-animate-caption');
-                        caption?.classList.add('aos-animate');
-                    }
-                });
-            }, { threshold: 0.2, rootMargin: "0px 0px -50px 0px" });
-
-            if (overlay) observer.observe(overlay);
-        });
+          observer.unobserve(entry.target); // 🔥 important
+        }
+      });
+    },
+    {
+      threshold: 0.15,
+      rootMargin: "0px 0px -80px 0px"
     }
+  );
+
+  document.querySelectorAll('.photo-card').forEach(card => {
+    observer.observe(card);
+  });
+}
+
 
     // =========================
     // Scroll Animations
@@ -170,16 +177,21 @@ document.addEventListener("DOMContentLoaded", () => {
     // =========================
     // Parallax & Particle Scroll
     // =========================
-    window.addEventListener('scroll', () => {
-        const scrolled = window.pageYOffset;
-        const hero = document.querySelector('.hero');
-        if (hero) hero.style.transform = `translateY(${scrolled * 0.5}px)`;
+   window.addEventListener('scroll', () => {
+    document.querySelectorAll('.photo-card img').forEach(img => {
+        const rect = img.getBoundingClientRect();
+        const windowHeight = window.innerHeight;
 
-        document.querySelectorAll('.particle').forEach((particle, index) => {
-            const speed = 0.2 + (index % 3) * 0.1;
-            particle.style.transform = `translateY(${scrolled * speed}px)`;
-        });
+        // percent of the element visible in viewport
+        let visible = 1 - (rect.top / windowHeight);
+        if(visible > 1) visible = 1;
+        if(visible < 0) visible = 0;
+
+        // scale and opacity based on scroll position
+        img.style.transform = `scale(${0.8 + 0.2 * visible}) rotate(${(1 - visible) * -5}deg)`;
+        img.style.opacity = visible;
     });
+});
 
     // =========================
     // Mouse & Touch Movement for Floating Hearts
@@ -248,7 +260,7 @@ document.addEventListener("DOMContentLoaded", () => {
         entries.forEach(entry => {
             if (entry.isIntersecting) {
                 const img = entry.target.querySelector('img');
-                if (img) img.style.animation = 'photoEnter 0.8s ease-out forwards';
+                if (img) img.style.animation = 'photoEnter 0.01s ease-out forwards';
             }
         });
     }, { threshold: 0.2 });
@@ -278,6 +290,20 @@ function updateTimeCounter() {
 
 setInterval(updateTimeCounter, 1000);
 updateTimeCounter();
+
+gsap.utils.toArray(".photo-card img").forEach(img => {
+    gsap.from(img, {
+        scrollTrigger: {
+            trigger: img,
+            start: "top 80%",
+            end: "bottom 20%",
+            scrub: true // ← makes it follow scroll speed
+        },
+        scale: 0.8,
+        rotate: -5,
+        opacity: 0
+    });
+});
 
 
 
