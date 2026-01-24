@@ -521,6 +521,11 @@ footer {
 
 /* responsive design */
 @media (max-width: 768px) {
+     .photo-card,
+  .photo-overlay,
+  .photo-caption {
+    transition: all 0.3s ease; /* faster fade */
+  }
     .photo-caption, .photo-overlay {
         /* fade in on scroll using aos-animate class */
         opacity: 0;
