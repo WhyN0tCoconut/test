@@ -83,13 +83,28 @@ body {
     0%, 50% { border-color: #8b3a3a; }
     51%, 100% { border-color: transparent; }
 }
+/* Initial hidden state */
+.photo-card {
+  opacity: 0;
+  transform: translateY(8px) scale(0.98);
+  will-change: transform, opacity;
+}
+
+/* Instant reveal */
+.photo-card.show-fast {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  transition: 
+    opacity 0.1s ease-out,
+    transform 0.2s ease-out;
+}
 
 .subtitle {
     font-size: clamp(1.1rem, 2.5vw, 1.5rem);
     color: #8b3a3a;
     margin-bottom: 40px;
     opacity: 0;
-    animation: fadeInUp 1s ease 3s forwards;
+    animation: fadeInUp 0.6s ease 1.5s forwards;
 }
 .counter {
   text-align: center;
@@ -165,7 +180,7 @@ body {
     left: 50%;
     transform: translateX(-50%);
     opacity: 0;
-    animation: fadeInUp 1s ease 6s forwards;
+    animation: fadeInUp 0.4s ease 1.6s forwards;
 }
 
 .scroll-arrow {
@@ -184,7 +199,7 @@ body {
     width: 6px; height: 6px;
     background: #8b3a3a;
     border-radius: 50%;
-    animation: scrollDot 2s ease-in-out infinite;
+    animation: scrollDot 1s ease-in-out infinite;
 }
 
 @keyframes scrollDot {
@@ -212,7 +227,7 @@ body {
     margin-bottom: 60px;
     opacity: 0;
     transform: translateY(50px);
-    transition: all 0.6s ease;
+    transition: all 0.4s ease;
 }
 
 .section-title.aos-animate { opacity: 1; transform: translateY(0); }
@@ -223,11 +238,14 @@ body {
     gap: 30px;
     padding: 20px 0;
 }
+.photo-card {
+  will-change: transform, opacity;
+}
 
 .photo-card {
     opacity: 0;
     transform: translateY(50px);
-    transition: all 0.6s ease;
+    transition: all 0.1s ease;
     border-radius: 20px;
     overflow: hidden;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
@@ -250,11 +268,11 @@ body {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    transition: transform 0.5s ease;
+    transition: transform 0.1s ease;
 }
 
 .photo-container:hover img { transform: scale(1.1) rotate(2deg); 
-transition: transform 0.3s ease;
+transition: transform 0.1s ease;
 }
 
 /* photo overlay + captions */
@@ -268,7 +286,7 @@ transition: transform 0.3s ease;
     padding: 20px;
     transform: translateY(20px);
     opacity: 0;
-    transition: transform 0.6s ease, opacity 0.6s ease;
+    transition: transform 0.1s ease, opacity 0.1s ease;
 }
 
 .photo-container:hover .photo-overlay {
@@ -288,7 +306,7 @@ transition: transform 0.3s ease;
     margin-bottom: 10px;
     transform: translateY(20px);
     opacity: 0;
-        transition: transform 0.6s ease, opacity 0.6s ease;
+        transition: transform 0.1s ease, opacity 0.1s ease;
 }
 
 .photo-caption.aos-animate {
@@ -443,7 +461,7 @@ footer {
 }
 
 /* fade in animation */
-.fade-in { opacity: 0; animation: fadeInUp 1s ease forwards; }
+.fade-in { opacity: 0; animation: fadeInUp 0.8s ease forwards; }
 
 @keyframes fadeInUp {
     from { opacity: 0; transform: translateY(30px); }
@@ -523,11 +541,15 @@ footer {
 
 /* responsive design */
 @media (max-width: 768px) {
-     .photo-card,
-  .photo-overlay,
-  .photo-caption {
-    transition: all 0.1s ease; /* faster fade */
-  }
+    .photo-card {
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.photo-overlay,
+.photo-caption {
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
     .photo-caption, .photo-overlay {
         /* fade in on scroll using aos-animate class */
         opacity: 0;
