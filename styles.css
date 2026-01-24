@@ -524,7 +524,7 @@ footer {
      .photo-card,
   .photo-overlay,
   .photo-caption {
-    transition: all 0.3s ease; /* faster fade */
+    transition: all 0.1s ease; /* faster fade */
   }
     .photo-caption, .photo-overlay {
         /* fade in on scroll using aos-animate class */
