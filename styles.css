@@ -680,22 +680,49 @@ body {
     }
 
     #hiddenMessage p {
-        font-size: clamp(1.4rem, 3vw, 1.6rem); /* bigger paragraph text */
-        line-height: 1.7; /* keep spacing readable */
+        font-size: clamp(1.6rem, 3.5vw, 1.8rem); /* larger & readable */
+        line-height: 1.8;
     }
-    
+
     .message-card { padding: 40px 20px; margin: 0 20px; }
 .message-title {
-        font-size: clamp(2.7rem, 5vw, 3.5rem); /* slightly bigger */
+        font-size: clamp(3.2rem, 6vw, 3.8rem); /* BIGGER heading */
+        line-height: 1.2;
     }
 
-    .message-text {
-        font-size: clamp(1.5rem, 3vw, 1.7rem); /* more readable */
-    }
-
+   .message-text,
     .message-signature {
-        font-size: clamp(1.7rem, 3vw, 1.9rem); /* slightly bigger */
+        font-size: clamp(1.7rem, 3.5vw, 1.9rem); /* BIGGER paragraphs */
+        line-height: 1.8;
     }
+.quiz {
+        font-family: 'Poppins', sans-serif; /* REMOVE cursive */
+        font-size: 1.6rem;
+    }
+
+    .quiz h2 {
+        font-size: 2.4rem;
+        font-weight: 600;
+    }
+
+    .quiz p,
+    .quiz label {
+        font-size: 1.6rem;
+        font-weight: 500;
+    }
+
+    .quiz input,
+    .quiz select {
+        font-size: 1.6rem;
+        padding: 12px;
+    }
+
+    .quiz button {
+        font-size: 1.6rem;
+        padding: 14px 28px;
+    }
+
+
 
 
 }
