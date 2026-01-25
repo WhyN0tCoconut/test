@@ -634,7 +634,10 @@ body {
 
 .photo-overlay,
 .photo-caption {
-    font-size: clamp(1.5rem, 2.7vw, 1.7rem); /* slightly bigger */
+    .photo-caption {
+        font-size: 1.85rem; /* small, noticeable increase */
+        line-height: 1.4;
+    }
   transition: opacity 0.3s ease, transform 0.3s ease;
 }
 
@@ -653,10 +656,11 @@ body {
         font-size: clamp(1.4rem, 4vw, 1.8rem);
         line-height: 1.6; /* improves readability */
         padding: 0 10px;
+}
     
     .typewriter {
         white-space: normal;
-        font-size: clamp(3rem, 5vw, 2.7rem);
+        font-size: clamp(2rem, 5vw, 2.7rem);
         width: 24ch;
         animation: typewriter 1.5s steps(24) 0.3s forwards, blink 0.5s infinite;
     }
