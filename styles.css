@@ -286,6 +286,7 @@ transition: transform 0.1s ease;
     padding: 20px;
     transform: translateY(20px);
     opacity: 0;
+    min-height: 3rem;
     transition: transform 0.1s ease, opacity 0.1s ease;
 }
 
