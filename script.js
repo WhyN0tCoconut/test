@@ -305,5 +305,3 @@ gsap.utils.toArray(".photo-card img").forEach(img => {
     });
 });
 
-
-
