@@ -634,6 +634,7 @@ body {
 
 .photo-overlay,
 .photo-caption {
+    font-size: clamp(1.2rem, 2.5vw, 1.5rem); /* slightly bigger */
   transition: opacity 0.3s ease, transform 0.3s ease;
 }
 
@@ -651,14 +652,14 @@ body {
 
     .typewriter {
         white-space: normal;
-        font-size: clamp(1.5rem, 4vw, 2.5rem);
+        font-size: clamp(1.9rem, 5vw, 2.7rem);
         width: 24ch;
         animation: typewriter 1.5s steps(24) 0.3s forwards, blink 0.5s infinite;
     }
 
     .cta-button {
         padding: 12px 24px;
-        font-size: 1rem;
+        font-size: 1.5rem;
         animation: fadeInUp 1s ease 1s forwards;
     }
 
@@ -666,7 +667,28 @@ body {
     .heart { font-size: 1.5rem; }
     .gallery-grid { grid-template-columns: 1fr; gap: 20px; }
     .photo-container { height: 370px; }
+    #hiddenMessage h3 {
+        font-size: clamp(2rem, 4vw, 2.8rem); /* bigger heading */
+    }
+
+    #hiddenMessage p {
+        font-size: clamp(1.4rem, 3vw, 1.6rem); /* bigger paragraph text */
+        line-height: 1.7; /* keep spacing readable */
+    }
+    
     .message-card { padding: 40px 20px; margin: 0 20px; }
+.message-title {
+        font-size: clamp(2.5rem, 5vw, 3.2rem); /* slightly bigger */
+    }
+
+    .message-text {
+        font-size: clamp(1.3rem, 3vw, 1.6rem); /* more readable */
+    }
+
+    .message-signature {
+        font-size: clamp(1.5rem, 3vw, 1.8rem); /* slightly bigger */
+    }
+
 
 }
 
