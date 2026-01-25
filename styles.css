@@ -652,7 +652,7 @@ body {
 
     .typewriter {
         white-space: normal;
-        font-size: clamp(2.2rem, 5vw, 3rem);
+        font-size: clamp(3rem, 5vw, 3rem);
         width: 24ch;
         animation: typewriter 1.5s steps(24) 0.3s forwards, blink 0.5s infinite;
     }
