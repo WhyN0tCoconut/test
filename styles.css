@@ -668,24 +668,7 @@ body {
     .photo-container { height: 370px; }
     .message-card { padding: 40px 20px; margin: 0 20px; }
 
-.container {
-    padding: 2rem; /* smaller padding for tablets */
-  }
-
-  .img {
-    height: 20rem; /* smaller image */
-  }
-
-  .title {
-    font-size: 2.5rem; /* smaller title */
-  }
-
-  .btn {
-    font-size: 1.5rem;
-    padding: 1.2rem 2rem;
-  }
 }
-
 
 @media (max-width: 480px) {
     .hero-content { padding: 0 15px; }
