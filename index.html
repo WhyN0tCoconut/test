@@ -9,7 +9,8 @@
             href="https://fonts.googleapis.com/css2?family=Dancing+script:wght@400;600;700&family=Poppins:wght@300;400;500;600;700&display=swap"
 rel="stylesheet">
 <link rel="icon" href="first.jpg" type="image/jpg">
-    </head>
+    
+</head>
 
 
 
@@ -459,7 +460,7 @@ rel="stylesheet">
 </section>
 
 <div class="unlock-section">
-  <button id="unlockBtn">Touch 💌 Here !!</button>
+  <button id="unlockBtn">💌 Open This</button>
 
   <div id="hiddenMessage">
     <h3>I’m Sorry ❤️</h3>
@@ -539,7 +540,6 @@ I love you so much, and I’m changing with honesty this time. If life ever give
       <option value="">Select...</option>
       <option value="Yes">Yes ❤️</option>
       <option value="Maybe">Maybe 🤔</option>
-        <option value="Maybe">I Will Think 🤞</option>
     </select><br> <br>
 
     <!-- Question 4 -->
@@ -564,8 +564,7 @@ I love you so much, and I’m changing with honesty this time. If life ever give
     <!-- Question 6 -->
     <label>6. If you could change one behavior of me, what would it be?</label><br>
     <input type="text" name="changeBehavior" placeholder="Type here..." required><br>
-<label>7. Anything you’ve always wanted to say to me?</label><br>
-    <input type="text" name="finalMessage" placeholder="Type here..." required><br>
+
     <button type="submit">See Love Meter 💖</button>
   </form>
 
@@ -580,6 +579,35 @@ I love you so much, and I’m changing with honesty this time. If life ever give
 <!-- Heart container -->
 <div class="floatingHearts"></div>
 </div>
+
+
+<!--gif-->
+<main class="valentine">
+  <div class="valentine-container">
+
+  <!-- Valentine GIF -->
+  <img 
+    id="valentineImg"
+    class="img"
+    src="gif1.GIF"
+    alt="tonton"
+  />
+  
+  <p class="title">Will you be my Valentine?</p>
+
+  <div class="buttons">
+    <button type="button" class="btn btn-yes">Yes ❤️</button>
+    <button type="button" class="btn btn-no">No 😔</button>
+  </div>
+</main>
+
+
+
+
+
+
+
+
 
 <!--footer-->
 <footer class="footer">
@@ -706,6 +734,72 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 </script>
 
+<script>
+  // ===== Elements =====
+  const title = document.querySelector(".title");
+  const btnContainer = document.querySelector(".buttons");
+  const yesBtn = document.querySelector(".btn-yes");
+  const noBtn = document.querySelector(".btn-no");
+  const img = document.getElementById("valentineImg");
 
+  // ===== GIFs =====
+  const noGifs = ["gif2.GIF","gif3.GIF","gif4.GIF","gif5.GIF"]; // for No button
+  const yesGif = "gif6.GIF"; // for Yes button
+
+  const MAX_NO_GIFS = noGifs.length;
+
+  let play = true; // stops No button after last GIF
+  let noCount = 0; // tracks No clicks
+  let noButtonSize = 1; // scale of No button
+
+  // ===== Yes Button =====
+  yesBtn.addEventListener("click", () => {
+    title.innerHTML = "Yayy! I Love You!! ❤️";
+    btnContainer.classList.add("hidden"); // hide both buttons
+    img.src = yesGif; // Always gif6
+  });
+
+  // ===== No Button =====
+  noBtn.addEventListener("click", () => {
+    if (!play) return;
+
+    // increment No clicks
+    noCount++;
+    const imageIndex = Math.min(noCount - 1, MAX_NO_GIFS - 1); // adjust index for array
+
+    // change GIF according to clicks
+    img.src = noGifs[imageIndex];
+
+    // shrink No button gradually
+    noButtonSize *= 0.85;
+    noBtn.style.transform = `scale(${noButtonSize})`;
+
+    // enlarge Yes button slightly to tease
+    yesBtn.style.fontSize = `${parseFloat(window.getComputedStyle(yesBtn).fontSize) * 1.1}px`;
+
+    // change No button text
+    noBtn.innerHTML = generateMessage(noCount);
+
+    // stop after max GIFs
+    if (noCount === MAX_NO_GIFS) play = false;
+  });
+
+  // ===== Messages for No button =====
+  function generateMessage(noCount) {
+    const messages = [
+      "No 😔",
+      "Are You Sure? 🥹",
+      "Kanchi, Please 😭",
+      "Don't do this to me 🙏🏻",
+      "You are breaking my heart 💔",
+      "I'm gonna cry... 🥺💔"
+    ];
+    return messages[Math.min(noCount, messages.length - 1)];
+  }
+</script>
 </body>
 </html>
+
+
+
+
