@@ -692,8 +692,8 @@ body {
 
    .message-text,
     .message-signature {
-        font-size: clamp(1.7rem, 3.5vw, 1.9rem); /* BIGGER paragraphs */
-        line-height: 1.8;
+        font-size: clamp(1.9rem, 4vw, 2.1rem); /* BIGGER paragraphs */
+        line-height: 1.9;
     }
 .quiz {
         font-family: 'Poppins', sans-serif; /* REMOVE cursive */
