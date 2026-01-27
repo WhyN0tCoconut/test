@@ -18,7 +18,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
             // Play audio (mobile-friendly)
             music.currentTime = 0;
-            music.volume = 0.8;
+            music.volume = 0.7;
             music.play().catch(err => console.log("Audio blocked:", err));
         });
     }
@@ -266,7 +266,56 @@ document.addEventListener("DOMContentLoaded", () => {
     }, { threshold: 0.2 });
 
     document.querySelectorAll('.photo-card').forEach(card => photoObserver.observe(card));
+
+ const container = document.getElementById("loveHeartWrapper");
+    if (container) {
+        const total = 80;
+        const texts = [];
+
+        function center() {
+            const r = container.getBoundingClientRect();
+            return { x: r.width / 2, y: r.height / 2 };
+        }
+
+        let { x, y } = center();
+        let scale = Math.min(container.offsetWidth, container.offsetHeight) / 30;
+
+        for (let i = 0; i < total; i++) {
+            const span = document.createElement("span");
+            span.className = "heart-text";
+            span.textContent = "I Love You";
+            container.appendChild(span);
+            texts.push(span);
+        }
+
+        function animate() {
+            const t = Date.now() / 1000;
+            texts.forEach((s, i) => {
+                const a = (i / total) * Math.PI * 2 + t * 0.6;
+                const px = 16 * Math.sin(a) ** 3;
+                const py =
+                    13 * Math.cos(a) -
+                    5 * Math.cos(2 * a) -
+                    2 * Math.cos(3 * a) -
+                    Math.cos(4 * a);
+
+                s.style.left = x + px * scale + "px";
+                s.style.top = y - py * scale + "px";
+            });
+            requestAnimationFrame(animate);
+        }
+
+        animate();
+
+        window.addEventListener("resize", () => {
+            ({ x, y } = center());
+            scale = Math.min(container.offsetWidth, container.offsetHeight) / 30;
+        });
+    }
+
 });
+
+
 const proposalDate = new Date("2025-10-22T00:00:00");
 
 function updateTimeCounter() {
@@ -304,4 +353,3 @@ gsap.utils.toArray(".photo-card img").forEach(img => {
         opacity: 0
     });
 });
-
