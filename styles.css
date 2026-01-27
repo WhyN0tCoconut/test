@@ -465,6 +465,70 @@ footer {
     from { opacity: 0; transform: translateY(30px); }
     to { opacity: 1; transform: translateY(0); }
 }
+/* ===============================
+   I LOVE YOU HEART ANIMATION
+   =============================== */
+
+/* ===============================
+   HEART SECTION (BLACK BACKGROUND)
+   =============================== */
+/* ===============================
+   HEART TEXT ANIMATION FIX
+   =============================== */
+
+.love-heart-wrapper {
+    position: relative;
+    width: 100%;
+    max-width: 600px;
+    height: 320px;
+    margin: 0 auto;
+}
+.heart-text {
+    animation: glow 2s infinite alternate;
+}
+
+@keyframes glow {
+    from { text-shadow: 0 0 6px #ff5c8d; }
+    to   { text-shadow: 0 0 16px #ff99bb; }
+}
+
+.heart-text {
+    position: absolute;              /* 🔥 REQUIRED */
+    font-family: 'Dancing Script', cursive;
+    font-size: 16px;
+    color: #ff0000;
+    white-space: nowrap;             /* 🔥 prevents wrapping */
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+    text-shadow: 0 0 8px rgba(255, 92, 141, 0.8);
+}
+
+.love-heart-section {
+    background: #000;
+    padding: 100px 20px;
+    text-align: center;
+}
+
+.heart-title {
+    font-family: 'Dancing Script', cursive;
+    font-size: clamp(2.5rem, 5vw, 3.5rem);
+    color:red;
+    margin-bottom: 30px;
+    text-shadow: 0 0 15px rgba(255, 92, 141, 0.6);
+}
+
+/* keep your existing wrapper */
+.love-heart-wrapper {
+    position: relative;
+    width: 100%;
+    max-width: 600px;
+    height: 320px;
+    margin: 0 auto;
+    pointer-events: none;
+}
+
+
+
 .quiz {
   max-width: 450px;
   margin: 40px auto;
@@ -555,7 +619,12 @@ body {
     background: linear-gradient(135deg, #f5e0ee, #d5aecb);
     padding: 4rem 2rem;
 }
-
+#valentineImg {
+  width: 260px;        /* adjust this */
+  max-width: 100%;
+  height: auto;
+  transition: transform 0.3s ease;
+}
 .valentine-container {
     display: flex;
     flex-direction: column;
@@ -731,5 +800,3 @@ body {
     .hero-content { padding: 0 15px; }
     .section-title { margin-bottom: 40px; }
 }
-
-
