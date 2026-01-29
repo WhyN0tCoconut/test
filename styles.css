@@ -160,10 +160,10 @@ body {
     font-weight: 600;
     border-radius: 50px;
     cursor: pointer;
-    transition: all 0.3s ease;
+    transition: all 0.08s ease;
     box-shadow: 0 10px 30px rgba(255, 107, 107, 0.3);
     opacity: 0;
-    animation: fadeInUp 0.8s ease 1.8s forwards;
+    animation: fadeInUp 0.25s ease 0.4s forwards;
 }
 
 .cta-button:hover {
@@ -737,7 +737,7 @@ body {
     .cta-button {
         padding: 12px 24px;
         font-size: 1.5rem;
-        animation: fadeInUp 1s ease 1s forwards;
+        animation: fadeInUp 0.5s ease 0.5s forwards;
     }
 
     .floating-hearts { flex-wrap: wrap; gap: 10px; }
