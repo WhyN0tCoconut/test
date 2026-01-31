@@ -283,7 +283,7 @@ document.addEventListener("DOMContentLoaded", () => {
         for (let i = 0; i < total; i++) {
             const span = document.createElement("span");
             span.className = "heart-text";
-            span.textContent = "Eco-Islington";
+            span.textContent = "I Love You";
             container.appendChild(span);
             texts.push(span);
         }
