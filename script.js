@@ -153,7 +153,7 @@ document.addEventListener("DOMContentLoaded", () => {
         heart.style.position = 'absolute';
         heart.style.fontSize = '1.5rem';
         heart.style.pointerEvents = 'none';
-        heart.style.zIndex = '1000';
+        heart.style.zIndex = '10000';
 
         const rect = button.getBoundingClientRect();
         const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
@@ -283,7 +283,7 @@ document.addEventListener("DOMContentLoaded", () => {
         for (let i = 0; i < total; i++) {
             const span = document.createElement("span");
             span.className = "heart-text";
-            span.textContent = "I Love You";
+            span.textContent = "Eco-Islington";
             container.appendChild(span);
             texts.push(span);
         }
@@ -340,16 +340,58 @@ function updateTimeCounter() {
 setInterval(updateTimeCounter, 1000);
 updateTimeCounter();
 
-gsap.utils.toArray(".photo-card img").forEach(img => {
-    gsap.from(img, {
-        scrollTrigger: {
-            trigger: img,
-            start: "top 80%",
-            end: "bottom 20%",
-            scrub: true // ← makes it follow scroll speed
-        },
-        scale: 0.8,
-        rotate: -5,
-        opacity: 0
+
+
+
+document.addEventListener("DOMContentLoaded", () => {
+  const openVideoBtn = document.getElementById("openVideoBtn");
+  const videoWrapper = document.getElementById("videoWrapper");
+  const video = document.getElementById("specialVideo");
+  const bgMusic = document.getElementById("bgMusic");
+
+  if (!openVideoBtn || !videoWrapper || !video) {
+    console.log("❌ Video elements not found");
+    return;
+  }
+
+  openVideoBtn.addEventListener("click", () => {
+    console.log("🎥 Video button clicked");
+
+    openVideoBtn.style.display = "none";
+
+    // Expand container
+    videoWrapper.style.maxHeight = "1200px";
+    videoWrapper.style.opacity = "1";
+    videoWrapper.style.transform = "scale(1)";
+
+    // Pause background music
+    if (bgMusic) bgMusic.pause();
+
+    // Play video
+    video.currentTime = 0;
+    video.muted = false;
+
+    video.play().catch(err => {
+      console.log("❌ Video play blocked:", err);
     });
+
+    // Smooth scroll
+    setTimeout(() => {
+      videoWrapper.scrollIntoView({
+        behavior: "smooth",
+        block: "center"
+      });
+    }, 400);
+  });
+// 🔥 THIS IS THE MISSING PIECE
+  video.addEventListener("ended", () => {
+    console.log("🎵 Video ended, resuming background music");
+
+    if (bgMusic) {
+     
+      bgMusic.play().catch(err => {
+        console.log("❌ Music resume blocked:", err);
+      });
+    }
+  });
 });
