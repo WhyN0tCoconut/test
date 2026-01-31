@@ -535,6 +535,26 @@ I love you so much, and I’m changing with honesty this time. If life ever give
     </div>
 </section>
 
+
+<!-- Hidden Video Reveal Section -->
+<section class="hidden-video-section">
+    <h2 class="section-title" style="color:#ff99bb;">
+  A Moment Just for You 🎥❤️
+</h2>
+
+  <button id="openVideoBtn" class="video-open-btn">
+   💌 Touch Me to Open 💌
+  </button>
+
+  <div id="videoWrapper" class="video-wrapper">
+    <video id="specialVideo" controls playsinline>
+      <source src="her.mp4" type="video/mp4">
+      Your browser does not support video.
+    </video>
+  </div>
+</section>
+
+
 <!-- I LOVE YOU HEART SECTION -->
 <section class="love-heart-section">
   <h2 class="heart-title">I Love You ❤️</h2>
@@ -832,5 +852,8 @@ preloadedGifs.forEach(src => {
     return messages[Math.min(noCount, messages.length - 1)];
   }
 </script>
+<script src="https://unpkg.com/gsap@3/dist/gsap.min.js"></script>
+<script src="https://unpkg.com/gsap@3/dist/ScrollTrigger.min.js"></script>
+
 </body>
 </html>
