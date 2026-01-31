@@ -20,7 +20,8 @@ body {
     width: 100%;
     height: 100%;
     pointer-events: none;
-    z-index: 1;
+    z-index: 10000;
+ 
 }
 
 .particle {
@@ -28,6 +29,7 @@ body {
     font-size: 22px;
     opacity: 0.8;
     animation: float 6s ease-in-out infinite;
+    z-index: 10001;
 }
 
 @keyframes float {
@@ -428,14 +430,14 @@ transition: transform 0.1s ease;
 
 .unlock-section {
   text-align: center;
-  margin: 60px 20px;
+  margin: 100px 20px 80px;
 }
 
 #unlockBtn {
   background: linear-gradient(135deg, #ff6b81, #ff9a9e);
   color: white;
   border: none;
-  padding: 14px 26px;
+  padding: 22px 45px;
   border-radius: 30px;
   font-size: 16px;
   cursor: pointer;
@@ -503,11 +505,66 @@ footer {
     text-shadow: 0 0 8px rgba(255, 92, 141, 0.8);
 }
 
+/* ===============================
+   LOVE HEART SECTION - FIXED SHINE
+   =============================== */
+
 .love-heart-section {
-    background: #000;
-    padding: 100px 20px;
+    position: relative;
+    padding: 120px 20px;
     text-align: center;
+    overflow: hidden;
+
+    background:
+        radial-gradient(circle at 15% 20%,
+            rgba(255, 215, 0, 0.06),
+            transparent 18%),
+        radial-gradient(circle at 85% 80%,
+            rgba(255, 215, 0, 0.04),
+            transparent 20%),
+        linear-gradient(135deg,
+            #020202,
+            #070707,
+            #000000);
+
+    box-shadow: inset 0 0 90px rgba(255, 215, 0, 0.08);
 }
+
+/* 🔥 FIXED: Added 8s duration */
+.love-heart-section::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+
+    background: 
+        linear-gradient(
+            120deg,
+            transparent 42%,
+            rgba(255, 215, 0, 0.08), /* SUBTLE GOLD SHINE */
+            transparent 58%
+        );
+
+    animation: goldShineMove 6s linear infinite; /* Added "8" before "s" */
+    pointer-events: none;
+    z-index: 0;
+}
+
+@keyframes goldShineMove {
+    from { transform: translateX(-120%); }
+    to { transform: translateX(120%); }
+}
+
+@keyframes goldShineMove {
+    from { transform: translateX(-120%); }
+    to   { transform: translateX(120%); }
+}
+
+
+
+
+
+
+
 
 .heart-title {
     font-family: 'Dancing Script', cursive;
@@ -516,6 +573,8 @@ footer {
     margin-bottom: 30px;
     text-shadow: 0 0 15px rgba(255, 92, 141, 0.6);
 }
+
+
 
 /* keep your existing wrapper */
 .love-heart-wrapper {
@@ -585,15 +644,17 @@ footer {
   height: 100%;
   pointer-events: none;
   overflow: hidden;
-  z-index: 2;
+  z-index: 9999;
 }
 
-.heart {
+.floatingHearts .heart {
+
   position: absolute;
   bottom: -20px;
   font-size: 20px;
   animation: floatUp linear infinite;
   opacity: 0.8;
+  z-index: 10000;
 }
 
 @keyframes floatUp {
@@ -694,9 +755,150 @@ body {
 .hidden {
     display: none;
 }
+/* ===============================
+   HIDDEN VIDEO SECTION
+   =============================== */
+.hidden-video-section {
+  background: linear-gradient(
+    135deg,
+    #2b0f1f,   /* deep wine */
+    #5c1a33,   /* romantic rose */
+    #1a1a1a    /* soft dark fade */
+  );
+  padding: 180px 20px;
+  min-height: 550px;
+  text-align: center;
+  position: relative;
+  z-index: 1;
+  overflow: hidden;
+
+  border-top: 6px solid rgba(255, 153, 187, 0.6);
+  box-shadow: 
+    inset 0 40px 80px rgba(255, 92, 141, 0.15),
+    0 0 100px rgba(0, 0, 0, 0.5); /* Added outer shadow for depth */
+}
+/* 🔥 FAST GOLD SHINE */
+.hidden-video-section::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  
+  /* Barely visible gold */
+  background: linear-gradient(
+    110deg,
+    transparent 45%,
+    rgba(255, 215, 0, 0.04),
+    rgba(255, 215, 0, 0.07),
+    rgba(255, 215, 0, 0.04),
+    transparent 55%
+  );
+  
+  /* Fast movement - 4 seconds */
+  animation: gentleGoldShine 4s linear infinite;
+  pointer-events: none;
+  z-index: 0;
+}
+
+@keyframes gentleGoldShine {
+  from { transform: translateX(-120%) skewX(-12deg); }
+  to { transform: translateX(120%) skewX(-12deg); }
+}
+
+.video-open-btn {
+  background: linear-gradient(135deg, #ff5c8d, #ff99bb);
+  color: white;
+  border: none;
+  padding: 16px 32px;
+  font-size: 1.8rem;
+  border-radius: 40px;
+  cursor: pointer;
+  box-shadow: 0 10px 30px rgba(255, 92, 141, 0.4);
+  transition: transform 0.3s ease;
+}
+
+.video-open-btn:hover {
+  transform: scale(1.05);
+}
+.video-wrapper::before {
+  content: "✨ A memory from my heart ✨";
+  display: block;
+  color: #ffb6c1;
+  font-family: 'Dancing Script', cursive;
+  font-size: 2.2rem;
+  margin-bottom: 20px;
+  opacity: 0.8;
+}
+
+.video-wrapper {
+  max-height: 0;
+  overflow: hidden;
+  opacity: 0;
+  transform: scale(0.95);
+  transition:
+    max-height 0.8s ease,
+    opacity 0.6s ease,
+    transform 0.6s ease;
+}
+
+
+@keyframes fadeInVideo {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.video-wrapper video {
+  width: 100%;
+  border-radius: 20px;
+  box-shadow: 0 20px 40px rgba(255, 92, 141, 0.4);
+}
+
 
 /* responsive design */
 @media (max-width: 768px) {
+    /* Hidden video section - mobile optimization */
+    .hidden-video-section {
+        padding: 120px 15px; /* Reduced padding for mobile */
+        min-height: 450px; /* Reduced height */
+    }
+    
+    .hidden-video-section h2 {
+        font-size: clamp(1.8rem, 4.5vw, 2.5rem); /* Responsive heading */
+        line-height: 1.3;
+        margin-bottom: 30px;
+    }
+    
+    .video-open-btn {
+        padding: 14px 28px; /* Slightly smaller button */
+        font-size: 1.5rem;
+    }
+    
+    /* Adjust gold shine for mobile */
+    .hidden-video-section::before {
+        background: linear-gradient(
+            110deg,
+            transparent 40%,
+            rgba(255, 215, 0, 0.05), /* Slightly more visible on mobile */
+            rgba(255, 215, 0, 0.08),
+            rgba(255, 215, 0, 0.05),
+            transparent 60%
+        );
+        animation: gentleGoldShine 8s linear infinite; /* Slower on mobile */
+    }
+    
+    .video-wrapper::before {
+        font-size: 1.8rem; /* Smaller text */
+        margin-bottom: 15px;
+    }
+    
+    .video-wrapper video {
+        border-radius: 15px; /* Slightly smaller radius */
+    }
     .photo-card {
   transition: opacity 0.3s ease, transform 0.3s ease;
 }
