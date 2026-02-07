@@ -1220,7 +1220,7 @@ body {
         animation: fadeInUp 0.5s ease 0.5s forwards;
     }
 
-    .floating-hearts { flex-wrap: wrap; gap: 10px; }
+    .floating-hearts { flex-wrap: wrxap; gap: 10px; }
     .heart { font-size: 1.5rem; }
     .gallery-grid { grid-template-columns: 1fr; gap: 20px; }
     .photo-container { height: 370px; }
