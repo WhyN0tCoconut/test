@@ -1,1282 +1,898 @@
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
-
-body {
-    font-family: 'Poppins', sans-serif;
-    line-height: 1.6;
-    color: #333;
-    overflow-x: hidden;
-    scroll-behavior: smooth;
-}
-
-/* background particles */
-.particles {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    pointer-events: none;
-    z-index: 10000;
- 
-}
-
-.particle {
-    position: absolute;
-    font-size: 22px;
-    opacity: 0.8;
-    animation: float 6s ease-in-out infinite;
-    z-index: 10001;
-}
-
-@keyframes float {
-    0%, 100% { transform: translateY(0px) rotate(0deg); }
-    25% { transform: translateY(-20px) rotate(5deg); }
-    50% { transform: translateY(-10px) rotate(-5deg); }
-    75% { transform: translateY(-30px) rotate(3deg); }
-}
-
-/* hero section */
-.hero {
-    min-height: 100vh;
-    background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 50%, #fecfef 100%);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    position: relative;
-    overflow: hidden;
-}
-
-.hero::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; right: 0; bottom: 0;
-    background: radial-gradient(circle at 30% 20%, rgba(255, 182, 193, 0.3) 0%, transparent 70%), 
-                radial-gradient(circle at 70% 80%, rgba(255, 192, 203, 0.2) 0%, transparent 70%);
-    pointer-events: none;
-}
-
-.hero-content {
-    text-align: center;
-    z-index: 2;
-    position: relative;
-    padding: 0 20px;
-}
-
-.typewriter {
-    font-family: 'Dancing Script', cursive;
-    font-size: clamp(2.7rem, 6.5vw, 5.3rem);
-    font-weight: 700;
-    color: #8b3a3a;
-    margin-bottom: 20px;
-    white-space: nowrap;
-    overflow: hidden;
-    border-right: 3px solid #8b3a3a;
-    animation: typewriter 1.5s steps(26) 0.3s forwards, blink 0.6s infinite;
-    width: 0;
-}
-
-@keyframes typewriter { to { width: 100%; } }
-@keyframes blink {
-    0%, 50% { border-color: #8b3a3a; }
-    51%, 100% { border-color: transparent; }
-}
-/* Initial hidden state */
-.photo-card {
-  opacity: 0;
-  transform: translateY(8px) scale(0.98);
-  will-change: transform, opacity;
-}
-
-/* Instant reveal */
-.photo-card.show-fast {
-  opacity: 1;
-  transform: translateY(0) scale(1);
-  transition: 
-    opacity 0.1s ease-out,
-    transform 0.2s ease-out;
-}
-
-.subtitle {
-    font-size: clamp(1.1rem, 2.5vw, 1.5rem);
-    color: #8b3a3a;
-    margin-bottom: 40px;
-    opacity: 0;
-    animation: fadeInUp 0.6s ease 1.5s forwards;
-}
-.counter {
-  text-align: center;
-  margin: 40px auto;
-  font-family: 'Dancing Script', cursive;
-}
-
-.counter h2 {
-  font-size: 24px;
-}
-
-.dateText {
-  font-size: 16px;
-  opacity: 0.8;
-  margin-bottom: 10px;
-}
-
-#timeCounter {
-  font-size: 18px;
-  font-weight: 500;
-}
-.floating-hearts {
-    display: flex;
-    justify-content: center;
-    gap: 20px;
-    margin: 40px 0;
-    opacity: 0;
-    animation: fadeInUp 1s ease 4s forwards;
-}
-
-.heart {
-    font-size: 2rem;
-    animation: bounce 2s ease-in-out infinite;
-}
-
-.heart:nth-child(1){ animation-delay: 0s; }
-.heart:nth-child(2){ animation-delay: 0.2s; }
-.heart:nth-child(3){ animation-delay: 0.4s; }
-.heart:nth-child(4){ animation-delay: 0.6s; }
-.heart:nth-child(5){ animation-delay: 0.8s; }
-
-@keyframes bounce {
-    0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
-    40% { transform: translateY(-20px); }
-    60% { transform: translateY(-10px); }
-}
-
-.cta-button {
-    background: linear-gradient(45deg, #ff6b6b, #ff8e8e);
-    color: white;
-    border: none;
-    padding: 15px 30px;
-    font-size: 1.2rem;
-    font-weight: 600;
-    border-radius: 50px;
-    cursor: pointer;
-    transition: all 0.08s ease;
-    box-shadow: 0 10px 30px rgba(255, 107, 107, 0.3);
-    opacity: 0;
-    animation: fadeInUp 0.25s ease 0.4s forwards;
-}
-
-.cta-button:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 15px 40px rgba(255, 107, 107, 0.4);
-    background: linear-gradient(45deg, #ff5555, #ff7777);
-}
-
-.scroll-indicator {
-    position: absolute;
-    bottom: 30px;
-    left: 50%;
-    transform: translateX(-50%);
-    opacity: 0;
-    animation: fadeInUp 0.4s ease 1.6s forwards;
-}
-
-.scroll-arrow {
-    width: 30px;
-    height: 50px;
-    border: 2px solid #8b3a3a;
-    border-radius: 25px;
-    position: relative;
-}
-
-.scroll-arrow::before {
-    content: '';
-    position: absolute;
-    top: 8px; left: 50%;
-    transform: translateX(-50%);
-    width: 6px; height: 6px;
-    background: #8b3a3a;
-    border-radius: 50%;
-    animation: scrollDot 1s ease-in-out infinite;
-}
-
-@keyframes scrollDot {
-    0% { top: 8px; opacity: 1; }
-    100% { top: 32px; opacity: 0; }
-}
-
-/* gallery section */
-.gallery-section {
-    padding: 100px 0;
-    background: linear-gradient(180deg, #fff5f5 0%, #fef7f7 100%);
-}
-
-.container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 0 20px;
-}
-
-.section-title {
-    font-family: 'Dancing Script', cursive;
-    font-size: clamp(2.5rem, 5vw, 4rem);
-    color: #8b3a3a;
-    text-align: center;
-    margin-bottom: 60px;
-    opacity: 0;
-    transform: translateY(50px);
-    transition: all 0.4s ease;
-}
-
-.section-title.aos-animate { opacity: 1; transform: translateY(0); }
-
-.gallery-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 30px;
-    padding: 20px 0;
-}
-.photo-card {
-  will-change: transform, opacity;
-}
-
-.photo-card {
-    opacity: 0;
-    transform: translateY(50px);
-    transition: all 0.1s ease;
-    border-radius: 20px;
-    overflow: hidden;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-}
-
-.photo-card.aos-animate { opacity: 1; transform: translateY(0); }
-
-.photo-container {
-    position: relative;
-    overflow: hidden;
-    border-radius: 20px;
- 
-    width: 100%;
-    padding-top: 75%;
-}
-
-.photo-container img {
-    position: absolute;
-    top: 0; left: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    transition: transform 0.1s ease;
-}
-
-.photo-container:hover img { transform: scale(1.1) rotate(2deg); 
-transition: transform 0.1s ease;
-}
-
-/* photo overlay + captions */
-.photo-overlay {
-    position: absolute;
-    top: 0; left: 0; right: 0; bottom: 0;
-    background: linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.7) 100%);
-    display: flex;
-    align-items: flex-start;   /* 👈 THIS */
-    text-align: left;
-    flex-direction: column;
-    justify-content: flex-end;
-    padding: 20px;
-    transform: translateY(20px);
-    opacity: 0;
-    transition: transform 0.1s ease, opacity 0.1s ease;
-}
-
-.photo-container:hover .photo-overlay {
-    transform: none;
-    opacity: unset; /* remove override */
-}
-
-.photo-overlay.aos-animate-caption {
-    transform: translateY(0);
-    opacity: 1;
-}
-
-.photo-caption {
-    color: white;
-    font-size: 1.1rem;
-    font-weight: 500;
-    margin-bottom: 10px;
-    transform: translateY(20px);
-    opacity: 0;
-        transition: transform 0.1s ease, opacity 0.1s ease;
-}
-
-.photo-caption.aos-animate {
-    transform: translateY(0);
-    opacity: 1;
-}
-
-/* like button */
-.like-btn {
-    background: none;
-    border: none;
-    color: white;
-    font-size: 1.5rem;
-    cursor: pointer;
-    align-self: flex-end;
-    transition: transform 0.3s ease;
-}
-
-.like-btn:hover { transform: scale(1.2); }
-.like-btn.liked .heart-icon { color: #ff6b6b; }
-
-/* video section */
-.video-section {
-    padding: 100px 0;
-    background: linear-gradient(180deg, #fff5f5 0%, #fef7f7 100%);
-}
-
-.video-card {
-    opacity: 0;
-    transform: translateY(50px);
-    transition: all 0.6s ease;
-    border-radius: 20px;
-    overflow: hidden;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-}
-
-.video-card.aos-animate { opacity: 1; transform: translateY(0); }
-
-.video-card video {
-    width: 100%;
-    height: 300px;
-    object-fit: cover;
-    border-radius: 20px;
-    transition: transform 0.5s ease;
-}
-
-.video-card:hover video { transform: scale(1.1) rotate(2deg); }
-
-
-
-
-
-/* ===============================
-   LORD KRISHNA VIDEO SECTION
-   =============================== */
-
-.krishna-video-section {
-    position: relative;
-    padding: 120px 20px;
-    min-height: 100vh;
-    overflow: hidden;
-    background: 
-        linear-gradient(135deg, #0a3d2f 0%, #1a5c4a 50%, #0d3326 100%);
-    font-family: 'Poppins', sans-serif;
-}
-
-.krishna-background {
-    position: relative;
-    z-index: 1;
-    max-width: 1000px;
-    margin: 0 auto;
-}
-
-/* Floating Krishna elements */
-.krishna-flute, .krishna-peacock, .krishna-lotus, .krishna-radha {
-    position: absolute;
-    font-size: 3rem;
-    opacity: 0.15;
-    animation: floatKrishna 8s ease-in-out infinite;
-    z-index: 0;
-}
-
-.krishna-flute {
-    top: 10%;
-    left: 10%;
-    animation-delay: 0s;
-}
-
-.krishna-peacock {
-    top: 20%;
-    right: 15%;
-    animation-delay: 1s;
-}
-
-.krishna-lotus {
-    bottom: 30%;
-    left: 15%;
-    animation-delay: 2s;
-    font-size: 2.5rem;
-}
-
-.krishna-radha {
-    bottom: 20%;
-    right: 10%;
-    animation-delay: 3s;
-}
-
-@keyframes floatKrishna {
-    0%, 100% { transform: translateY(0) rotate(0deg); }
-    50% { transform: translateY(-20px) rotate(5deg); }
-}
-
-/* Krishna container */
-.krishna-container {
-    text-align: center;
-    position: relative;
-    z-index: 2;
-    padding: 40px;
-    background: rgba(255, 255, 255, 0.05);
-    backdrop-filter: blur(10px);
-    border-radius: 25px;
-    border: 1px solid rgba(255, 215, 0, 0.1);
-    box-shadow: 
-        0 20px 60px rgba(0, 0, 0, 0.3),
-        inset 0 0 60px rgba(255, 215, 0, 0.05);
-}
-
-.krishna-title {
-    font-family: 'Dancing Script', cursive;
-    font-size: clamp(2.5rem, 5vw, 3.5rem);
-    color: #ffd700;
-    margin-bottom: 20px;
-    text-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
-}
-
-.krishna-subtitle {
-    color: #b8e0d2;
-    font-size: 1.2rem;
-    margin-bottom: 50px;
-    opacity: 0.9;
-}
-
-/* Open button */
-.krishna-open-btn {
-    background: linear-gradient(135deg, #ffd700, #ffed4e);
-    color: #0a3d2f;
-    border: none;
-    padding: 18px 40px;
-    font-size: 1.5rem;
-    font-weight: 600;
-    border-radius: 50px;
-    cursor: pointer;
-    box-shadow: 
-        0 10px 30px rgba(255, 215, 0, 0.3),
-        0 0 30px rgba(255, 215, 0, 0.2);
-    transition: all 0.3s ease;
-    position: relative;
-    overflow: hidden;
-}
-
-.krishna-open-btn:hover {
-    transform: translateY(-5px);
-    box-shadow: 
-        0 15px 40px rgba(255, 215, 0, 0.4),
-        0 0 40px rgba(255, 215, 0, 0.3);
-}
-
-.krishna-open-btn:active {
-    transform: translateY(-2px);
-}
-
-/* Glow effect on button */
-.krishna-open-btn::before {
-    content: '';
-    position: absolute;
-    top: -2px;
-    left: -2px;
-    right: -2px;
-    bottom: -2px;
-    background: linear-gradient(45deg, #ffd700, #ffed4e, #ffd700);
-    border-radius: 52px;
-    z-index: -1;
-    opacity: 0;
-    transition: opacity 0.3s ease;
-}
-
-.krishna-open-btn:hover::before {
-    opacity: 1;
-    animation: buttonGlow 2s linear infinite;
-}
-
-@keyframes buttonGlow {
-    0%, 100% { opacity: 0.5; }
-    50% { opacity: 1; }
-}
-
-/* Video wrapper (hidden by default) */
-.krishna-video-wrapper {
-    max-height: 0;
-    opacity: 0;
-    overflow: hidden;
-    margin-top: 40px;
-    transition: all 0.8s cubic-bezier(0.68, -0.55, 0.27, 1.55);
-    transform: translateY(30px);
-    border-radius: 20px;
-    background: rgba(0, 0, 0, 0.3);
-    padding: 0;
-}
-
-.krishna-video-wrapper.show {
-    max-height: 900px;
-    opacity: 1;
-    transform: translateY(0);
-    padding: 30px;
-}
-
-/* Video header */
-.krishna-video-header {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 20px;
-    margin-bottom: 30px;
-    color: #ffd700;
-    font-family: 'Dancing Script', cursive;
-    font-size: 1.8rem;
-}
-
-.krishna-icon {
-    font-size: 2.5rem;
-    animation: rotateIcon 3s linear infinite;
-}
-
-@keyframes rotateIcon {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-}
-
-/* Video styling */
-.krishna-video-wrapper video {
-    width: 100%;
-    max-width: 800px;
-    border-radius: 15px;
-    box-shadow: 
-        0 20px 50px rgba(0, 0, 0, 0.5),
-        0 0 40px rgba(255, 215, 0, 0.2);
-    border: 3px solid rgba(255, 215, 0, 0.3);
-}
-
-/* Krishna quote */
-.krishna-quote {
-    margin-top: 30px;
-    padding: 20px;
-    background: rgba(255, 215, 0, 0.1);
-    border-radius: 15px;
-    border-left: 4px solid #ffd700;
-}
-
-.krishna-quote p {
-    color: #b8e0d2;
-    font-style: italic;
-    font-size: 1.1rem;
-    line-height: 1.6;
-}
-
-/* Background patterns */
-.krishna-video-section::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-image: 
-        radial-gradient(circle at 20% 30%, rgba(255, 215, 0, 0.05) 0%, transparent 50%),
-        radial-gradient(circle at 80% 70%, rgba(255, 215, 0, 0.05) 0%, transparent 50%);
-    z-index: 0;
-}
-
-/* Mobile responsiveness */
-@media (max-width: 768px) {
-    .krishna-video-section {
-        padding: 80px 15px;
-        min-height: auto;
-    }
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title> Happy Valentine's Day Baby❤️</title>
+            <link rel="stylesheet" href="styles.css">
+            <link
+            href="https://fonts.googleapis.com/css2?family=Dancing+script:wght@400;600;700&family=Poppins:wght@300;400;500;600;700&display=swap"
+rel="stylesheet">
+<link rel="icon" href="first.jpg" type="image/jpg">
     
-    .krishna-container {
-        padding: 25px 15px;
-    }
-    
-    .krishna-open-btn {
-        padding: 15px 30px;
-        font-size: 1.3rem;
-    }
-    
-    .krishna-video-header {
-        flex-direction: column;
-        gap: 10px;
-        font-size: 1.5rem;
-    }
-    
-    .krishna-video-wrapper.show {
-        padding: 20px 15px;
-    }
-    
-    .krishna-flute, .krishna-peacock, .krishna-lotus, .krishna-radha {
-        font-size: 2rem;
-        opacity: 0.1;
-    }
-}
-
-@media (max-width: 480px) {
-    .krishna-title {
-        font-size: 2.2rem;
-    }
-    
-    .krishna-open-btn {
-        font-size: 1.1rem;
-        padding: 12px 25px;
-    }
-    
-    .krishna-video-wrapper video {
-        border-radius: 10px;
-    }
-}
-
-/* message section */
-.message-section {
-    padding: 100px 0;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-}
-
-.message-card {
-    background: rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(20px);
-    border-radius: 30px;
-    padding: 60px 40px;
-    box-shadow: 0 20px 40px rgba(0,0,0,0.1);
-    border: 1px solid rgba(255,255,255,0.2);
-    text-align: center;
-    max-width: 800px;
-    margin: 0 auto;
-}
-
-.message-title {
-    font-family: 'Dancing Script', cursive;
-    font-size: clamp(2rem, 4vw, 3rem);
-    margin-bottom: 40px;
-    color: #fff;
-}
-
-.message-text {
-    font-size: 1.1rem;
-    line-height: 1.8;
-    margin-bottom: 20px;
-    opacity: 0;
-    transform: translateY(30px);
-    transition: all 0.6s ease;
-}
-
-.message-text.fade-in-animate {
-    opacity: 1;
-    transform: translateY(0);
-}
-
-.message-signature {
-    font-family: 'Marck Script';
-    font-size: 1.3rem;
-    font-weight: 400;
-    line-height: 1.9;
-    margin-top: 30px;
-    color: #ffeb3b;
-}
-
-.message-hearts {
-    margin-top: 30px;
-    display: flex;
-    justify-content: center;
-    gap: 20px;
-}
-
-.heart-animation {
-    font-size: 2rem;
-    animation: heartBeat 1.5s ease-in-out infinite;
-}
-
-.heart-animation:nth-child(1){ animation-delay: 0s; }
-.heart-animation:nth-child(2){ animation-delay: 0.3s; }
-.heart-animation:nth-child(3){ animation-delay: 0.6s; }
-
-@keyframes heartBeat {
-    0%, 100% { transform: scale(1); }
-    25% { transform: scale(1.2); }
-    50% { transform: scale(1.1); }
-}
-
-.unlock-section {
-  text-align: center;
-  margin: 100px 20px 80px;
-}
-
-#unlockBtn {
-  background: linear-gradient(135deg, #ff6b81, #ff9a9e);
-  color: white;
-  border: none;
-  padding: 22px 45px;
-  border-radius: 30px;
-  font-size: 16px;
-  cursor: pointer;
-}
-
-#hiddenMessage {
-  margin-top: 25px;
-  padding: 25px;
-  background: #fff0f5;
-  border-radius: 18px;
-  line-height: 1.7;
-  color: #333;
-}
-
-/* footer */
-footer {
-    background: #FFD7D9;
-    color: #8b3a3a;
-    text-align: center;
-    padding: 30px 0;
-}
-
-/* fade in animation */
-.fade-in { opacity: 0; animation: fadeInUp 0.8s ease forwards; }
-
-@keyframes fadeInUp {
-    from { opacity: 0; transform: translateY(30px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-/* ===============================
-   I LOVE YOU HEART ANIMATION
-   =============================== */
-
-/* ===============================
-   HEART SECTION (BLACK BACKGROUND)
-   =============================== */
-/* ===============================
-   HEART TEXT ANIMATION FIX
-   =============================== */
-
-.love-heart-wrapper {
-    position: relative;
-    width: 100%;
-    max-width: 600px;
-    height: 320px;
-    margin: 0 auto;
-}
-.heart-text {
-    animation: glow 2s infinite alternate;
-}
-
-@keyframes glow {
-    from { text-shadow: 0 0 6px #ff5c8d; }
-    to   { text-shadow: 0 0 16px #ff99bb; }
-}
-
-.heart-text {
-    position: absolute;              /* 🔥 REQUIRED */
-    font-family: 'Dancing Script', cursive;
-    font-size: 16px;
-    color: #ff0000;
-    white-space: nowrap;             /* 🔥 prevents wrapping */
-    transform: translate(-50%, -50%);
-    pointer-events: none;
-    text-shadow: 0 0 8px rgba(255, 92, 141, 0.8);
-}
-
-/* ===============================
-   LOVE HEART SECTION - FIXED SHINE
-   =============================== */
-
-.love-heart-section {
-    position: relative;
-    padding: 120px 20px;
-    text-align: center;
-    overflow: hidden;
-
-    background:
-        radial-gradient(circle at 15% 20%,
-            rgba(255, 215, 0, 0.06),
-            transparent 18%),
-        radial-gradient(circle at 85% 80%,
-            rgba(255, 215, 0, 0.04),
-            transparent 20%),
-        linear-gradient(135deg,
-            #020202,
-            #070707,
-            #000000);
-
-    box-shadow: inset 0 0 90px rgba(255, 215, 0, 0.08);
-}
-
-/* 🔥 FIXED: Added 8s duration */
-.love-heart-section::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-
-    background: 
-        linear-gradient(
-            120deg,
-            transparent 42%,
-            rgba(255, 215, 0, 0.08), /* SUBTLE GOLD SHINE */
-            transparent 58%
-        );
-
-    animation: goldShineMove 6s linear infinite; /* Added "8" before "s" */
-    pointer-events: none;
-    z-index: 0;
-}
-
-@keyframes goldShineMove {
-    from { transform: translateX(-120%); }
-    to { transform: translateX(120%); }
-}
-
-@keyframes goldShineMove {
-    from { transform: translateX(-120%); }
-    to   { transform: translateX(120%); }
-}
-
-
-
-
-
-
-
-
-.heart-title {
-    font-family: 'Dancing Script', cursive;
-    font-size: clamp(2.5rem, 5vw, 3.5rem);
-    color:red;
-    margin-bottom: 30px;
-    text-shadow: 0 0 15px rgba(255, 92, 141, 0.6);
-}
-
-
-
-/* keep your existing wrapper */
-.love-heart-wrapper {
-    position: relative;
-    width: 100%;
-    max-width: 600px;
-    height: 320px;
-    margin: 0 auto;
-    pointer-events: none;
-}
-
-
-
-.quiz {
-  max-width: 450px;
-  margin: 40px auto;
-  padding: 20px;
-  background: #fff0f5;
-  border-radius: 15px;
-  box-shadow: 0 5px 20px rgba(0,0,0,0.1);
-  font-family: 'Dancing Script', cursive;
-  text-align: center;
-  position: relative;
-}
-
-.quiz input, .quiz select {
-  width: 90%;
-  padding: 10px;
-  border-radius: 8px;
-  border: 1px solid #ffb6c1;
-  font-size: 16px;
-}
-
-.quiz button {
-  margin-top: 20px;
-  padding: 12px 25px;
-  border: none;
-  border-radius: 20px;
-  background: #ff5c8d;
-  color: white;
-  font-size: 16px;
-  cursor: pointer;
-}
-
-#loveMeterWrapper {
-  width: 100%;
-  height: 25px;
-  background: #ffe6f0;
-  border-radius: 12px;
-  overflow: hidden;
-  margin-bottom: 10px;
-}
-
-#loveMeter {
-  width: 0%;
-  height: 100%;
-  background: linear-gradient(90deg, #ff5c8d, #ff69b4);
-  border-radius: 12px;
-  transition: width 2s ease-in-out;
-}
-
-.floatingHearts {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
-  overflow: hidden;
-  z-index: 9999;
-}
-
-.floatingHearts .heart {
-
-  position: absolute;
-  bottom: -20px;
-  font-size: 20px;
-  animation: floatUp linear infinite;
-  opacity: 0.8;
-  z-index: 10000;
-}
-
-@keyframes floatUp {
-  from { transform: translateY(0) scale(0.8); opacity: 1; }
-  to { transform: translateY(-110vh) scale(1.2); opacity: 0; }
-}
-
-/* Valentine Section */
-
-html {
-    font-size: 62.5%;
-}
-
-body {
-    background: linear-gradient(135deg, #f5e0ee, #d5aecb);
-    font-family: "Poppins", sans-serif;
-    color: #4a4a4a;
-    text-align: center;
-}
-
-/* Valentine section ONLY */
-.valentine {
-    background: linear-gradient(135deg, #f5e0ee, #d5aecb);
-    padding: 4rem 2rem;
-}
-#valentineImg {
-  width: 260px;        /* adjust this */
-  max-width: 100%;
-  height: auto;
-  transition: transform 0.3s ease;
-}
-.valentine-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 4rem;
-    border-radius: 15px;
-    background: white;
-    max-width: 600px;
-    margin: 0 auto;
-}
-
-
-.img {
-    width: auto;
-    height: 28rem;
-    border-radius: 12px;
-    margin-bottom: 2rem;
-    transition: transform 0.3s ease-in-out;
-}
-
-.img:hover {
-    transform: scale(1.03);
-}
-
-.title {
-    font-size: 3.6rem;
-    font-weight: 600;
-    color: hotpink;
-    margin-bottom: 2rem;
-}
-
-.buttons {
-    display: flex;
-    gap: 1.5rem;
-    justify-content: center;
-    flex-wrap: wrap;
-}
-
-.btn {
-    padding: 1.6rem 3rem;
-    border: none;
-    border-radius: 30px;
-    font-size: 1.8rem;
-    font-weight: 500;
-    cursor: pointer;
-    transition: all 0.3s ease-in-out;
-    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
-}
-
-.btn:hover {
-    transform: translateY(-2px);
-}
-
-/* Yes button */
-.btn-yes {
-    background-color: #28a745; /* green */
-    color: white;
-}
-
-/* No button */
-.btn-no {
-    background-color: #ff69b4; /* pink */
-    color: white;
-}
-
-.hidden {
-    display: none;
-}
-/* ===============================
-   HIDDEN VIDEO SECTION
-   =============================== */
-.hidden-video-section {
-  background: linear-gradient(
-    135deg,
-    #2b0f1f,   /* deep wine */
-    #5c1a33,   /* romantic rose */
-    #1a1a1a    /* soft dark fade */
-  );
-  padding: 180px 20px;
-  min-height: 550px;
-  text-align: center;
-  position: relative;
-  z-index: 1;
-  overflow: hidden;
-
-  border-top: 6px solid rgba(255, 153, 187, 0.6);
-  box-shadow: 
-    inset 0 40px 80px rgba(255, 92, 141, 0.15),
-    0 0 100px rgba(0, 0, 0, 0.5); /* Added outer shadow for depth */
-}
-/* 🔥 FAST GOLD SHINE */
-.hidden-video-section::before {
-  content: "";
-  position: absolute;
-  inset: 0;
+</head>
+
+
+
+<body>
+    <!--flotating background particle-->
+    <div class="particles" id="particles"></div>
+
+
+<!--hero section-->
+<section class="hero" id="hero">
+    <div class="hero-content">
+<h1 class="typewriter" id="typewriter">
+  Happy Valentine's Day <span class="line-break">Nanu, My Love❤️‍🩹</span>
+</h1>
+        <br>
+        <p class="subtitle fade-in">Love, memories, and hope quietly sharing a Valentine’s Day together ❤️</p>
+        <div class="floating-hearts">
+            <div class="heart">❤️</div>
+            <div class="heart">💝</div>
+            <div class="heart">🤍 💍</div>
+            <div class="heart">💞</div>
+            <div class="heart">😘</div>
+        </div>
+      <div class="counter fade">
+  <h2>Since the day I proposed you 💍 ❤️</h2>
+  <p class="dateText">22 October 2025</p>
+  <p id="timeCounter"></p>
+</div>
+<button id="startBtn" class="cta-button">Start the Celebration 🎉🥳❤️</button>
+<audio id="bgMusic" src="song.mp3" preload="auto" playsinline loop></audio>
+        </div>
+        <div class="scroll-indicator">
+            <div class="scroll-arrow"></div>
+        </div>
+        </section>
+
+
+        <!--photo gallery section-->
+        <section class="gallery-section" id="gallery">
+            <div class="container">
+                <h2 class="section-title">Our Beautiful Memories🥹❤️</h2>
+            <div class="gallery-grid">
+                <div class="photo-card" data-aos="fade-up" data-delay="100">
+                    <div class="photo-container">
+                        <img src="first.jpg" alt="Beautiful Moment">
+                        <div class="photo-overlay">
+                            <div class="photo-caption"> Every Moment with you is Magical❤️🪄</div>
+                            <button class="like-btn" onclick="toggleLike(this)">
+                                <span class="heart-icon">🤍</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+<div class="photo-card" data-aos="fade-up" data-delay="200">
+    <div class="photo-container">
+        <img src="second.jpg" alt="Happy Times">
+        <div class="photo-overlay">
+            <div class="photo-caption">My All Time Fav Photo
+        </div>
+        <button class="like-btn" onclick="toggleLike(this)">
+            <span class="heart-icon">🤍</span>
+        </button>
+    </div>
+</div>
+
+            </div>
+
+     <div class="photo-card" data-aos="fade-up" data-delay="900">
+    <div class="photo-container">
+        <img src="9th.jpg" alt="Happy Times">
+        <div class="photo-overlay">
+            <div class="photo-caption">As Beautiful As Radha Maa
+        </div>
+        <button class="like-btn" onclick="toggleLike(this)">
+            <span class="heart-icon">🤍</span>
+        </button>
+    </div>
+</div>
+
+            </div>
+
+
+            <div class="photo-card" data-aos="fade-up" data-delay="300">
+    <div class="photo-container">
+        <img src="third.JPG" alt="Your Childhood">
+        <div class="photo-overlay">
+            <div class="photo-caption"> Your most cute photo
+        </div>
+        <button class="like-btn" onclick="toggleLike(this)">
+            <span class="heart-icon">🤍</span>
+        </button>
+    </div>
+</div>
+
+            </div>
+
+
+
+             <div class="photo-card" data-aos="fade-up" data-delay="400">
+    <div class="photo-container">
+        <img src="fourth.jpg" alt="First Snap">
+        <div class="photo-overlay">
+            <div class="photo-caption">First Snap, First time I saw you
+        </div>
+        <button class="like-btn" onclick="toggleLike(this)">
+            <span class="heart-icon">🤍</span>
+        </button>
+    </div>
+</div>
+
+            </div>
+                   <div class="photo-card" data-aos="fade-up" data-delay="400">
+    <div class="photo-container">
+        <img src="sixth.PNG" alt="First Snap">
+        <div class="photo-overlay">
+            <div class="photo-caption">Longest Call
+        </div>
+        <button class="like-btn" onclick="toggleLike(this)">
+            <span class="heart-icon">🤍</span>
+        </button>
+    </div>
+</div>
+
+            </div>
+
+
+             <div class="photo-card" data-aos="fade-up" data-delay="500">
+    <div class="photo-container">
+        <img src="fifth.jpg" alt="Fav Photo">
+        <div class="photo-overlay">
+            <div class="photo-caption"> My Second Fav Photo
+        </div>
+        <button class="like-btn" onclick="toggleLike(this)">
+            <span class="heart-icon">🤍</span>
+        </button>
+    </div>
+</div>
+
+            </div>
+
+                <div class="photo-card" data-aos="fade-up" data-delay="600">
+    <div class="photo-container">
+        <img src="sixth.jpg" alt="Fav Photo">
+        <div class="photo-overlay">
+            <div class="photo-caption"> Lovely Pout
+        </div>
+        <button class="like-btn" onclick="toggleLike(this)">
+            <span class="heart-icon">🤍</span>
+        </button>
+    </div>
+</div>
+
+            </div>
+
+            
+
+
+            <div class="photo-card" data-aos="fade-up" data-delay="700">
+    <div class="photo-container">
+        <img src="7th.jpg" alt="Happy Times">
+        <div class="photo-overlay">
+            <div class="photo-caption">Beautiful Sano Eyes
+        </div>
+        <button class="like-btn" onclick="toggleLike(this)">
+            <span class="heart-icon">🤍</span>
+        </button>
+    </div>
+</div>
+
+            </div>
+
+<div class="photo-card" data-aos="fade-up" data-delay="800">
+    <div class="photo-container">
+        <img src="8th.jpg" alt="Happy Times">
+        <div class="photo-overlay">
+            <div class="photo-caption">Hickey twinning days
+        </div>
+        <button class="like-btn" onclick="toggleLike(this)">
+            <span class="heart-icon">🤍</span>
+        </button>
+    </div>
+</div>
+
+            </div>
+
+       
+            <div class="photo-card" data-aos="fade-up" data-delay="1000">
+    <div class="photo-container">
+        <img src="10th.jpg" alt="Happy Times">
+        <div class="photo-overlay">
+            <div class="photo-caption">Cutie's Childhood
+        </div>
+        <button class="like-btn" onclick="toggleLike(this)">
+            <span class="heart-icon">🤍</span>
+        </button>
+    </div>
+</div>
+
+            </div>
+<div class="photo-card" data-aos="fade-up" data-delay="1100">
+    <div class="photo-container">
+        <img src="11th.jpg" alt="Happy Times">
+        <div class="photo-overlay">
+            <div class="photo-caption">Phone Case Photos
+        </div>
+        <button class="like-btn" onclick="toggleLike(this)">
+            <span class="heart-icon">🤍</span>
+        </button>
+    </div>
+</div>
+
+            </div>
+<div class="photo-card" data-aos="fade-up" data-delay="1200">
+    <div class="photo-container">
+        <img src="12th.jpg" alt="Happy Times">
+        <div class="photo-overlay">
+            <div class="photo-caption">Theif Who Stole My Heart
+        </div>
+        <button class="like-btn" onclick="toggleLike(this)">
+            <span class="heart-icon">🤍</span>
+        </button>
+    </div>
+</div>
+
+            </div>
+            <div class="photo-card" data-aos="fade-up" data-delay="1300">
+    <div class="photo-container">
+        <img src="13th.jpg" alt="Happy Times">
+        <div class="photo-overlay">
+            <div class="photo-caption">Slim Days
+        </div>
+        <button class="like-btn" onclick="toggleLike(this)">
+            <span class="heart-icon">🤍</span>
+        </button>
+    </div>
+</div>
+  </div>
+<div class="photo-card" data-aos="fade-up" data-delay="1400">
+    <div class="photo-container">
+        <img src="14th.jpg" alt="Happy Times">
+        <div class="photo-overlay">
+            <div class="photo-caption">3 Oct, Flight Day
+        </div>
+        <button class="like-btn" onclick="toggleLike(this)">
+            <span class="heart-icon">🤍</span>
+        </button>
+    </div>
+</div>
+
+            </div>
+            <div class="photo-card" data-aos="fade-up" data-delay="1500">
+    <div class="photo-container">
+        <img src="15th.jpg" alt="Happy Times">
+        <div class="photo-overlay">
+            <div class="photo-caption">Beautiful View
+        </div>
+        <button class="like-btn" onclick="toggleLike(this)">
+            <span class="heart-icon">🤍</span>
+        </button>
+    </div>
+</div>
+
+            </div>
+            <div class="photo-card" data-aos="fade-up" data-delay="1600">
+    <div class="photo-container">
+        <img src="16th.jpg" alt="Happy Times">
+        <div class="photo-overlay">
+            <div class="photo-caption">Nasalu Tii Aakha
+        </div>
+        <button class="like-btn" onclick="toggleLike(this)">
+            <span class="heart-icon">🤍</span>
+        </button>
+    </div>
+</div>
+
+            </div>
+            <div class="photo-card" data-aos="fade-up" data-delay="1700">
+    <div class="photo-container">
+        <img src="17th.jpg" alt="Happy Times">
+        <div class="photo-overlay">
+            <div class="photo-caption">Healthy Hair
+        </div>
+        <button class="like-btn" onclick="toggleLike(this)">
+            <span class="heart-icon">🤍</span>
+        </button>
+    </div>
+</div>
+
+            </div>
+            <div class="photo-card" data-aos="fade-up" data-delay="1800">
+    <div class="photo-container">
+        <img src="18th.jpg" alt="Happy Times">
+        <div class="photo-overlay">
+            <div class="photo-caption">Eyes full of magic
+        </div>
+        <button class="like-btn" onclick="toggleLike(this)">
+            <span class="heart-icon">🤍</span>
+        </button>
+    </div>
+</div>
+
+            </div>
+            <div class="photo-card" data-aos="fade-up" data-delay="1900">
+    <div class="photo-container">
+        <img src="19th.jpg" alt="Happy Times">
+        <div class="photo-overlay">
+            <div class="photo-caption">Esports Pro Player
+        </div>
+        <button class="like-btn" onclick="toggleLike(this)">
+            <span class="heart-icon">🤍</span>
+        </button>
+    </div>
+</div>
+
+            </div>
+            <div class="photo-card" data-aos="fade-up" data-delay="2000">
+    <div class="photo-container">
+        <img src="20th.jpg" alt="Happy Times">
+        <div class="photo-overlay">
+            <div class="photo-caption">Cuteness Overloaded
+        </div>
+        <button class="like-btn" onclick="toggleLike(this)">
+            <span class="heart-icon">🤍</span>
+        </button>
+    </div>
+</div>
+
+            </div>
+            <div class="photo-card" data-aos="fade-up" data-delay="2100">
+    <div class="photo-container">
+        <img src="21th.jpg" alt="Happy Times">
+        <div class="photo-overlay">
+            <div class="photo-caption">Fav Dress Combo
+        </div>
+        <button class="like-btn" onclick="toggleLike(this)">
+            <span class="heart-icon">🤍</span>
+        </button>
+    </div>
+</div>
+
+            </div>
+            <div class="photo-card" data-aos="fade-up" data-delay="2200">
+    <div class="photo-container">
+        <img src="22th.jpg" alt="Happy Times">
+        <div class="photo-overlay">
+            <div class="photo-caption">Beautiful with Beautiful Flowers
+        </div>
+        <button class="like-btn" onclick="toggleLike(this)">
+            <span class="heart-icon">🤍</span>
+        </button>
+    </div>
+</div>
+
+            </div>
+            <div class="photo-card" data-aos="fade-up" data-delay="2300">
+    <div class="photo-container">
+        <img src="lips.jpg" alt="Happy Times">
+        <div class="photo-overlay">
+            <div class="photo-caption">Sweet Lips
+        </div>
+        <button class="like-btn" onclick="toggleLike(this)">
+            <span class="heart-icon">🤍</span>
+        </button>
+    </div>
+</div>
+
+            </div>
+            
+            <div class="photo-card" data-aos="fade-up" data-delay="2400">
+    <div class="photo-container">
+        <img src="27th.JPG" alt="Happy Times">
+        <div class="photo-overlay">
+            <div class="photo-caption">Gangster's Wife
+        </div>
+        <button class="like-btn" onclick="toggleLike(this)">
+            <span class="heart-icon">🤍</span>
+        </button>
+    </div>
+</div>
+
+            </div>
+
+            <div class="photo-card" data-aos="fade-up" data-delay="2500">
+    <div class="photo-container">
+        <img src="25th.JPG" alt="Happy Times">
+        <div class="photo-overlay">
+            <div class="photo-caption">Say Cheese
+        </div>
+        <button class="like-btn" onclick="toggleLike(this)">
+            <span class="heart-icon">🤍</span>
+        </button>
+    </div>
+</div>
+
+            </div>
+
+            <div class="photo-card" data-aos="fade-up" data-delay="2600">
+    <div class="photo-container">
+        <img src="26th.jpg" alt="Happy Times">
+        <div class="photo-overlay">
+            <div class="photo-caption">Will You Marry Me? 💍 ❤️
+        </div>
+        <button class="like-btn" onclick="toggleLike(this)">
+            <span class="heart-icon">🤍</span>
+        </button>
+    </div>
+</div>
+
+            </div>
+            <div class="photo-card" data-aos="fade-up" data-delay="2700">
+    <div class="photo-container">
+        <img src="24th.jpg" alt="Happy Times">
+        <div class="photo-overlay">
+            <div class="photo-caption">F**Y Coco
+        </div>
+        <button class="like-btn" onclick="toggleLike(this)">
+            <span class="heart-icon">🤍</span>
+        </button>
+    </div>
+</div>
+
+            </div>
+
+
+
+
+
+
+            </div>
+            </div>
+
+
+
+
+        </section>
+        <!--video gallery section (below photo gallery)-->
+<section class="video-section" id="videos">
+    <div class="container">
+        <h2 class="section-title">Moments Our Souls Remember 🎥❤️</h2>
+        <div class="gallery-grid">
+            <div class="video-card" data-aos="fade-up" data-delay="100">
+                <video src="video1.mov" autoplay muted loop playsinline></video>
+            </div>
+            <div class="video-card" data-aos="fade-up" data-delay="200">
+                <video src="video2.MOV" autoplay muted loop playsinline></video>
+            </div>
+            <div class="video-card" data-aos="fade-up" data-delay="300">
+                <video src="video3.mov" autoplay muted loop playsinline></video>
+            </div>
+            <div class="video-card" data-aos="fade-up" data-delay="400">
+                <video src="video4.mov" autoplay muted loop playsinline></video>
+            </div>
+            <div class="video-card" data-aos="fade-up" data-delay="500">
+                <video src="video5.MOV" autoplay muted loop playsinline></video>
+            </div>
+            <div class="video-card" data-aos="fade-up" data-delay="600">
+                <video src="video6.MOV" autoplay muted loop playsinline></video>
+            </div>
+        </div>
+    </div>
+</section>
+
+<div class="unlock-section">
+  <button id="unlockBtn">💌 Touch Me to Open 💌
+
+  </button>
+
+  <div id="hiddenMessage">
+    <h3>I’m Sorry ❤️</h3> <br> <br> 
+    <p>
+      Timle kaile sorry vandaina thiyeu, coz timle galti nai gardaina thiyeu. But me, harek din sorry vanthe tara yo kura haru maile timlai gumaye pachi realize gare.<br><br>
+
+      Timle malai kati maya gareko thiyeu vanne kura realize hudaixa.  All those night without you were very tough for me jun maile timlai gumaye paxi balla buje. Ho raicha, koi manche aafno huda matlab nai lagdiana but jaba tada janxa then it feels like aakash ko sabai bhanda chamkilo taara ekkasi bilayera gayo,  just like that song lyrics, “ you only miss the sun when it starts to snow, only know you love her when you let her go“.<br><br>
+
+      Jun galti maile gare, tesko parinam maile bhogi sake nanu. I am truly sorry for hurting you.<br><br>
+
+      When you said <em>“I had things to lose then, but not anymore”</em>, made me feel like I lost a person that means everything to me. Not only me, you loose me too. Jo manche ma vanda badi, mero lagi roko thiyo, tei manche le aafno future gumayo. <br><br>
+
+      Galti bujhera sudhrina khojnu nai maya ho I am sorry 😔. I love you so much❤️<br>
+      <br> Like the song says, ‘I could stay awake just to hear you breathing.’ That’s how much you mean to me. <br> <br><br> Just a sincere apology from my heart.
+    </p>
+  </div>
+</div>
+
+
+
+<!-- Lord Krishna Hidden Video Section -->
+<section class="krishna-video-section" id="krishnaVideo">
+    <div class="krishna-background">
+        <!-- Decorative Krishna elements -->
+        <div class="krishna-flute">🎶</div>
+        <div class="krishna-peacock">🦚</div>
+        <div class="krishna-lotus">🌸</div>
+        <div class="krishna-radha">👑</div>
+        
+        <div class="krishna-container">
+            <h2 class="krishna-title">I Owe You an Apology</h2>
+            <p class="krishna-subtitle" style="font-size: 13px;">Just an apology through a Bhajan 😔</p>
+            
+            <button id="krishnaVideoBtn" class="krishna-open-btn">
+              💌 Touch Me to Open 💌
+            </button>
+            
+            <div class="krishna-video-wrapper" id="krishnaVideoWrapper">
+                <div class="krishna-video-header">
+                    <span class="krishna-icon">🦚</span>
+                    <h2>Why is it always Sorry and not!!! </h2>
+                    <span class="krishna-icon">🦚</span>
+                </div>
+                
+                <video id="krishnaSpecialVideo" controls playsinline>
+                    <source src="song.mp4" type="video/mp4">
+                    Your browser does not support the video tag.
+                </video>
+                
+                <div class="krishna-quote">
+                    <p style="font-size: 15px;">"The voice, including the background, is AI-generated, so please don’t mind"</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+        <!--Valentines Message-->
+<section class="message-section" id="message">
+    <div class="container">
+        <div class="message-card">
+            <h2 class="message-title">A Special Message to My Special Person😘</h2>
+            <div class="message-content">
+                <p class="message-text fade-in-text">
+                    Happy Valentine’s Day, Mrs. Coco 🌸❤️
+I am here to wish the most special girl in my world a lovely day! 🫶
+May God always bless my love.
+No matter where life takes us, Timro One-and-Only Coco timro sath sadhai hunecha. I promise you💍🤍
+</p>
+<p class="message-signature fade-in-text">
+    I’ve always wanted to say this to you, tara bhanne himmat kahile aayena. Maile till now, life ma lakhau keti haru dekhe. Ramri pani dekhe, naramri pani dekhe. Tara timi jasto perfect ni everything aaile samma dekhya thiyena. <br> <br> For real! Timlai maile yetikai girlfriend banako haina, yetikai wife maneko haina. Herda kei banauna na aaune jasto dekhinxa, tara 5 start hotel ko chef vanda ni dayum banauxa. Aanuhar ni testai ramro, sano chubby cute. <br> <br> Jhan gala vane tokera khaidiu jasto pukka pareko. Maile timlai first time veteko bela kiss haina, gala tokxu paila. Ekchoti jhatta herda ta sojo ko  ni bau dekhinxa, tara mero aagadi ooohoo. Body ni testai ramro, sexy mommy. Hot to handle🔥Jhan aakha, dayumm fucking wauu. Sano chitikka pareko. Jhan weed khayera, aakha rato banayera nindra lageko bela ta aafno aangalo ma sutauna maanlagcha🥺 <br> <br> Yedi maile timro sundarta ko bayan garnu paryo vane, sidai pen banda gardinxu, full paper empty, endless. I haven’t seen you in saree, tara lagako dekhe vane sayad tei dhalxu hola. Yedi kasailai maan bata dhanyabaad vanne mauka paye vane, I would thank my mom and dad who gave birth to pretty you. Tessai breakup pachi pani aafu le aafu lai change garera timlai aafno banauchu vaneko haina ni kanchi. <br> <br>Overall? Aparibhasit; 1/0 ∞ 🌸 ❤️  <br><br> Sometimes I feel jealous when I see couples holding hands or riding on a bike with beautiful girls. But they don’t know that I have a Kohinoor with me 😂💎❤️
+
+</p>
+               <p class="message-signature fade-in-text" style="color: black;">
+                Happy Valentine’s Day, Nanu, My SOUL ❤️
+I broke something beautiful by not being truthful, and I’ll regret that for a long time. Ma timi sanga bf/gf ko samaya matra haina, mero whole life as husband and wife bitauna chahanchu💍 Timro harek sukha ra dukha ma sath dina chahanchu 🥺
+I love you so much, and I’m changing with honesty this time. If life ever gives me a chance to show you that, I will. Please Forgive me Baby. <br><br> Can we start talking again, slowly? Not as who we were, but as who we’re becoming. Please 🥺 ❤️ I really need you🥹❤️
+               </p> 
+
+
+            </div>
+<div class="message-hearts">
+    <span class="heart-animation">❤️</span>
+     <span class="heart-animation">🤍</span>
+      <span class="heart-animation">💍</span>
+       <span class="heart-animation">💝</span>
+</div>
+
+
+
+
+
+        </div>
+    </div>
+</section>
+
+
+<!-- Hidden Video Reveal Section -->
+<section class="hidden-video-section">
+    <h2 class="section-title" style="color:#ff99bb;">
+  A Moment Just for You 🎥❤️
+</h2>
+
+  <button id="openVideoBtn" class="video-open-btn">
+   💌 Touch Me to Open 💌
+  </button>
+
+  <div id="videoWrapper" class="video-wrapper">
+    <video id="specialVideo" controls playsinline>
+      <source src="her.mp4" type="video/mp4">
+      Your browser does not support video.
+    </video>
+  </div>
+</section>
+
+
+<!-- I LOVE YOU HEART SECTION -->
+<section class="love-heart-section">
+  <h2 class="heart-title">I Love You ❤️</h2>
+  <div class="love-heart-wrapper" id="loveHeartWrapper"></div>
+</section>
+
+
+
+<div class="quiz fade">
+  <h2>Fun Love Quiz 💌</h2>
+  <p>Answer these and see your love meter! ❤️</p>
+
+  <form id="loveQuiz">
+    <!-- Question 1 -->
+    <label>1. How much do you miss me? (1-5)</label><br>
+    <input type="number" name="firstDateMemory" min="1" max="5" placeholder="1 = a little, 5 = a lot" required><br>
+<br>
+    <!-- Question 2 -->
+    <label>2. Did you expect such Valentine gift?</label><br>
+    <input type="text" name="favoriteMemory" placeholder="Type here..." required><br>
+<br>
+    <!-- Question 3 -->
+    <label>3. Can we forget our past and start a new beginning from scratch?</label><br>
+    <select name="feeling" required>
+      <option value="">Select...</option>
+      <option value="Yes">Yes ❤️</option>
+      <option value="Maybe">Maybe 🤔</option>
+    </select><br> <br>
+
+    <!-- Question 4 -->
+    <label>4. Who is your favorite in our silly fights?</label><br> 
+    <select name="sillyFight" required>
+      <option value="">Select...</option>
+      <option value="Me">Me 😎</option>
+      <option value="You">You 😊</option>
+      <option value="Both">Both 😂</option>
+    </select><br>
+<br>
+    <!-- Question 5 -->
+    <label>5. What’s your favorite memory of us?</label><br>
+    <select name="favoriteMemoryOption" required>
+      <option value="">Select...</option>
+      <option value="Gaming">Gaming 🎮</option>
+      <option value="Calls">Calls 📞</option>
+      <option value="Fights">Fights 😅</option>
+      <option value="Watching Reels">Watching Reels 🎬</option>
+    </select><br>
+<br>
+    <!-- Question 6 -->
+    <label>6. If you could change one behavior of me, what would it be?</label><br>
+    <input type="text" name="changeBehavior" placeholder="Type here..." required><br> <br>
+
+  <label>7. Anything you’ve always wanted to say to me?</label><br>
+    <input type="text" name="finalMessage" placeholder="Type here..." required><br>
+
+      
+    <button type="submit">See Love Meter 💖</button>
+  </form>
+
+ <div id="loveMeterContainer" style="display:none; margin-top:20px;">
+  <h3>Your Love Meter 💝</h3>
+  <div id="loveMeterWrapper">
+    <div id="loveMeter"></div>
+  </div>
+  <p id="loveMeterText"></p>
+</div>
+
+<!-- Heart container -->
+<div class="floatingHearts"></div>
+</div>
+
+
+<!--gif-->
+<main class="valentine">
+  <div class="valentine-container">
+
+  <!-- Valentine GIF -->
+  <img 
+    id="valentineImg"
+    class="img"
+    src="doggy.GIF"
+    alt="tonton"
+    width="100"
+
+
+  />
   
-  /* Barely visible gold */
-  background: linear-gradient(
-    110deg,
-    transparent 45%,
-    rgba(255, 215, 0, 0.04),
-    rgba(255, 215, 0, 0.07),
-    rgba(255, 215, 0, 0.04),
-    transparent 55%
-  );
+  <p class="title">Will you be my Valentine?</p>
+
+  <div class="buttons">
+    <button type="button" class="btn btn-yes">Yes ❤️</button>
+    <button type="button" class="btn btn-no">No 😔</button>
+  </div>
+</main>
+
+
+
+
+
+
+
+
+
+<!--footer-->
+<footer class="footer">
+    <div class="container">
+        <p>❤️ 💍 FOR THE MOST BEAUTIFUL PERSON IN MY LIFE 💍 ❤️</p>
+    </div>
+</footer>
+
+
+
+
+<script src="script.js"></script>
+
+
+  <script>
+document.addEventListener("DOMContentLoaded", () => {
+    const startBtn = document.getElementById("startBtn");
+    const music = document.getElementById("bgMusic");
+
+    startBtn.addEventListener("click", () => {
+        music.currentTime = 0;
+        music.play()
+            .then(() => {
+                console.log("Music started 🎵");
+            })
+            .catch(err => {
+                console.log("Mobile blocked audio:", err);
+            });
+
+        // optional: hide button after click
+        startBtn.style.display = "none";
+
+        // optional: scroll to next section
+        document.querySelector(".gallery-section")?.scrollIntoView({
+            behavior: "smooth"
+        });
+    });
+});
+</script>
+
+
+
+
+<script src="https://cdn.emailjs.com/dist/email.min.js"></script>
+<script>
+  // Initialize EmailJS with your PUBLIC KEY
+  emailjs.init("h3Aln-NuBBipYJov1"); // Your public key
+
+  const heartsContainer = document.querySelector(".floatingHearts");
+
+  // Flying hearts animation
+   function createHeart() {
+    const heart = document.createElement("div");
+    heart.className = "heart";
+    heart.innerHTML = "❤️";
+    heart.style.left = Math.random() * 100 + "vw";
+    heart.style.animationDuration = 4 + Math.random() * 2 + "s"; // slower
+    heart.style.fontSize = 18 + Math.random() * 15 + "px"; // smaller variation
+    heartsContainer.appendChild(heart);
+    setTimeout(() => heart.remove(), 6000);
+  }
+  setInterval(createHeart, 1200); // fewer hearts (every 1.2s)
+
+  // Form submission
+  document.getElementById("loveQuiz").addEventListener("submit", function(event){
+    event.preventDefault();
+
+    // ===== Replace these with your EmailJS IDs =====
+    const SERVICE_ID = "service_x3u4ah7";   // e.g., "gmail"
+    const TEMPLATE_ID = "template_pswxwnv"; // e.g., "valentine_quiz"
+    // ============================================
+
+    emailjs.sendForm(SERVICE_ID, TEMPLATE_ID, this)
+      .then(function(){
+     
+      },
+       
+      );
+
+    // ===== Love Meter calculation =====
+    const first = parseInt(this.firstDateMemory.value); // 1-5
+    const feeling = this.feeling.value; // Yes/Maybe
+    const sillyFight = this.sillyFight.value;
+
+    let firstScore = ((first - 1) / 4) * 50; // 0-50%
+    let feelingScore = (feeling === "Yes") ? 50 : 25;
+    let sillyScore = (sillyFight === "Both") ? 10 : 5;
+
+    let meterScore = firstScore + feelingScore + sillyScore;
+    if(meterScore > 100) meterScore = 100;
+
+    // Display meter
+    const meterContainer = document.getElementById("loveMeterContainer");
+    const meterBar = document.getElementById("loveMeter");
+    const meterText = document.getElementById("loveMeterText");
+
+    meterContainer.style.display = "block";
+    meterBar.style.width = meterScore + "%";
+    meterBar.innerText = Math.round(meterScore) + "%";
+
+    // Meter text
+    if(meterScore >= 90) meterText.innerText = "Wow 😍 You really miss me!";
+    else if(meterScore >= 70) meterText.innerText = "Great ❤️ You remember a lot!";
+    else if(meterScore >= 50) meterText.innerText = "Good 😊 Let’s make new memories!";
+    else meterText.innerText = "Hmm 🤔 Let’s start fresh together!";
+
+    this.reset();
+  });
+</script>
   
-  /* Fast movement - 4 seconds */
-  animation: gentleGoldShine 4s linear infinite;
-  pointer-events: none;
-  z-index: 0;
-}
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  const unlockBtn = document.getElementById("unlockBtn");
+  const hiddenMessage = document.getElementById("hiddenMessage");
 
-@keyframes gentleGoldShine {
-  from { transform: translateX(-120%) skewX(-12deg); }
-  to { transform: translateX(120%) skewX(-12deg); }
-}
+  if (unlockBtn && hiddenMessage) {
+    hiddenMessage.style.display = "none";
 
-.video-open-btn {
-  background: linear-gradient(135deg, #ff5c8d, #ff99bb);
-  color: white;
-  border: none;
-  padding: 16px 32px;
-  font-size: 1.8rem;
-  border-radius: 40px;
-  cursor: pointer;
-  box-shadow: 0 10px 30px rgba(255, 92, 141, 0.4);
-  transition: transform 0.3s ease;
-}
-
-.video-open-btn:hover {
-  transform: scale(1.05);
-}
-.video-wrapper::before {
-  content: "✨ A memory from my heart ✨";
-  display: block;
-  color: #ffb6c1;
-  font-family: 'Dancing Script', cursive;
-  font-size: 2.2rem;
-  margin-bottom: 20px;
-  opacity: 0.8;
-}
-
-.video-wrapper {
-  max-height: 0;
-  overflow: hidden;
-  opacity: 0;
-  transform: scale(0.95);
-  transition:
-    max-height 0.8s ease,
-    opacity 0.6s ease,
-    transform 0.6s ease;
-}
-
-
-@keyframes fadeInVideo {
-  from {
-    opacity: 0;
-    transform: scale(0.95);
+    unlockBtn.addEventListener("click", function () {
+      hiddenMessage.style.display = "block";
+      unlockBtn.style.display = "none";
+    });
   }
-  to {
-    opacity: 1;
-    transform: scale(1);
+});
+</script>
+
+<script>
+  // ===== Elements =====
+  const preloadedGifs = ["daya.GIF", "sad.GIF", "gif4.GIF", "gif5.GIF", "gif6.GIF"];
+preloadedGifs.forEach(src => {
+    const img = new Image();
+    img.src = src;
+});
+
+  const title = document.querySelector(".title");
+  const btnContainer = document.querySelector(".buttons");
+  const yesBtn = document.querySelector(".btn-yes");
+  const noBtn = document.querySelector(".btn-no");
+  const img = document.getElementById("valentineImg");
+
+  // ===== GIFs =====
+  const noGifs = ["daya.GIF","sad.GIF","gif4.GIF","gif5.GIF"]; // for No button
+  const yesGif = "gif6.GIF"; // for Yes button
+
+  const MAX_NO_GIFS = noGifs.length;
+
+  let play = true; // stops No button after last GIF
+  let noCount = 0; // tracks No clicks
+  let noButtonSize = 1; // scale of No button
+
+  // ===== Yes Button =====
+  yesBtn.addEventListener("click", () => {
+    title.innerHTML = "Yayy! I Love You!! ❤️";
+    btnContainer.classList.add("hidden"); // hide both buttons
+    img.src = yesGif; // Always gif6
+  });
+
+  // ===== No Button =====
+  noBtn.addEventListener("click", () => {
+    if (!play) return;
+
+    // increment No clicks
+    noCount++;
+    const imageIndex = Math.min(noCount - 1, MAX_NO_GIFS - 1); // adjust index for array
+
+    // change GIF according to clicks
+    img.src = noGifs[imageIndex];
+
+    // shrink No button gradually
+    noButtonSize *= 0.85;
+    noBtn.style.transform = `scale(${noButtonSize})`;
+
+    // enlarge Yes button slightly to tease
+    yesBtn.style.fontSize = `${parseFloat(window.getComputedStyle(yesBtn).fontSize) * 1.1}px`;
+
+    // change No button text
+    noBtn.innerHTML = generateMessage(noCount);
+
+    // stop after max GIFs
+    if (noCount === MAX_NO_GIFS) play = false;
+  });
+
+  // ===== Messages for No button =====
+  function generateMessage(noCount) {
+    const messages = [
+      "No 😔",
+      "Are You Sure? 🥹",
+      "Kanchi, Please 😭",
+      "Don't do this to me 🙏🏻",
+      "You are breaking my heart 💔",
+      "I'm gonna cry... 🥺💔"
+    ];
+    return messages[Math.min(noCount, messages.length - 1)];
   }
-}
+</script>
+<script src="https://unpkg.com/gsap@3/dist/gsap.min.js"></script>
+<script src="https://unpkg.com/gsap@3/dist/ScrollTrigger.min.js"></script>
 
-.video-wrapper video {
-  width: 100%;
-  border-radius: 20px;
-  box-shadow: 0 20px 40px rgba(255, 92, 141, 0.4);
-}
-
-
-/* responsive design */
-@media (max-width: 768px) {
-    /* Hidden video section - mobile optimization */
-    .hidden-video-section {
-        padding: 120px 15px; /* Reduced padding for mobile */
-        min-height: 450px; /* Reduced height */
-    }
-    
-    .hidden-video-section h2 {
-        font-size: clamp(1.8rem, 4.5vw, 2.5rem); /* Responsive heading */
-        line-height: 1.3;
-        margin-bottom: 30px;
-    }
-    
-    .video-open-btn {
-        padding: 14px 28px; /* Slightly smaller button */
-        font-size: 1.5rem;
-    }
-    
-    /* Adjust gold shine for mobile */
-    .hidden-video-section::before {
-        background: linear-gradient(
-            110deg,
-            transparent 40%,
-            rgba(255, 215, 0, 0.05), /* Slightly more visible on mobile */
-            rgba(255, 215, 0, 0.08),
-            rgba(255, 215, 0, 0.05),
-            transparent 60%
-        );
-        animation: gentleGoldShine 8s linear infinite; /* Slower on mobile */
-    }
-    
-    .video-wrapper::before {
-        font-size: 1.8rem; /* Smaller text */
-        margin-bottom: 15px;
-    }
-    
-    .video-wrapper video {
-        border-radius: 15px; /* Slightly smaller radius */
-    }
-    .photo-card {
-  transition: opacity 0.3s ease, transform 0.3s ease;
-}
-
-.photo-overlay,
-.photo-caption {
-    .photo-caption {
-        font-size: 1.85rem; /* small, noticeable increase */
-        line-height: 1.4;
-    }
-  transition: opacity 0.3s ease, transform 0.3s ease;
-}
-
-    .photo-caption, .photo-overlay {
-        /* fade in on scroll using aos-animate class */
-        opacity: 0;
-        transform: translateY(20px);
-    }
-
-    .photo-caption.aos-animate,
-    .photo-overlay.aos-animate-caption {
-        opacity: 1;
-        transform: translateY(0);
-    }
-.subtitle {
-        font-size: clamp(1.4rem, 4vw, 1.8rem);
-        line-height: 1.6; /* improves readability */
-        padding: 0 10px;
-}
-    
-    .typewriter {
-        white-space: normal;
-        font-size: clamp(2.4rem, 6vw, 3.2rem);
-        width: 24ch;
-        animation: typewriter 1.5s steps(24) 0.3s forwards, blink 0.5s infinite;
-    }
-
-    .cta-button {
-        padding: 12px 24px;
-        font-size: 1.5rem;
-        animation: fadeInUp 0.5s ease 0.5s forwards;
-    }
-
-    .floating-hearts { flex-wrap: wrap; gap: 10px; }
-    .heart { font-size: 1.5rem; }
-    .gallery-grid { grid-template-columns: 1fr; gap: 20px; }
-    .photo-container { height: 370px; }
-    #hiddenMessage h3 {
-        font-size: clamp(2rem, 4vw, 2.8rem); /* bigger heading */
-    }
-
-    #hiddenMessage p {
-        font-size: clamp(1.6rem, 3.5vw, 1.8rem); /* larger & readable */
-        line-height: 1.8;
-    }
-
-    .message-card { padding: 40px 20px; margin: 0 20px; }
-.message-title {
-        font-size: clamp(3.2rem, 6vw, 3.8rem); /* BIGGER heading */
-        line-height: 1.2;
-    }
-
-   .message-text,
-    .message-signature {
-        font-size: clamp(2.2rem, 4.5vw, 2.5rem); /* BIGGER paragraphs */
-        line-height: 1.9;
-    }
-.quiz {
-        font-family: 'Poppins', sans-serif; /* REMOVE cursive */
-        font-size: 1.6rem;
-    }
-
-    .quiz h2 {
-        font-size: 2.4rem;
-        font-weight: 600;
-    }
-
-    .quiz p,
-    .quiz label {
-        font-size: 1.6rem;
-        font-weight: 500;
-    }
-
-    .quiz input,
-    .quiz select {
-        font-size: 1.6rem;
-        padding: 12px;
-    }
-
-    .quiz button {
-        font-size: 1.6rem;
-        padding: 14px 28px;
-    }
-
-
-
-
-}
-
-@media (max-width: 480px) {
-    .hero-content { padding: 0 15px; }
-    .section-title { margin-bottom: 40px; }
-}
+</body>
+</html>
