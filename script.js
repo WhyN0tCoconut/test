@@ -2,6 +2,40 @@
 // DOM Content Loaded - Main Entry Point
 // =========================
 document.addEventListener("DOMContentLoaded", () => {
+    function preloadAllGalleryImages() {
+        // List of ALL your gallery images
+        const galleryImages = [
+            'first.jpg',
+            'second.jpg',
+            '9th.jpg',
+            'third.JPG',
+            'fourth.jpg',
+            'sixth.PNG',
+            'fifth.jpg',
+            'sixth.jpg',
+            '7th.jpg',
+            '8th.jpg',
+            '10th.jpg',
+            '11th.jpg',
+            '12th.jpg',
+            '13th.jpg',
+            '14th.jpg',
+            '15th.jpg',
+            '16th.jpg',
+            '17th.jpg',
+            '18th.jpg',
+            '19th.jpg',
+            '20th.jpg',
+            '21th.jpg',
+            '22th.jpg',
+            'lips.jpg',
+            '27th.JPG',
+            '25th.JPG',
+            '26th.jpg',
+            '24th.jpg'
+        ];
+    }
+    
     // =========================
     // Variables and References
     // =========================
