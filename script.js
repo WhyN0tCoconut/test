@@ -1,13 +1,25 @@
-
-
-
-
+// =========================
+// DOM Content Loaded - Main Entry Point
+// =========================
 document.addEventListener("DOMContentLoaded", () => {
+    // =========================
+    // Variables and References
+    // =========================
     const startBtn = document.getElementById("startBtn");
     const music = document.getElementById("bgMusic");
+    const krishnaVideoBtn = document.getElementById("krishnaVideoBtn");
+    const krishnaVideoWrapper = document.getElementById("krishnaVideoWrapper");
+    const krishnaVideo = document.getElementById("krishnaSpecialVideo");
+    const openVideoBtn = document.getElementById("openVideoBtn");
+    const videoWrapper = document.getElementById("videoWrapper");
+    const video = document.getElementById("specialVideo");
+    
+    // Variables to store music playback positions
+    let bgMusicPosition = 0;
+    let firstVideoMusicPosition = 0;
 
     // =========================
-    // Start Button & Audio
+    // 1. Start Button & Audio Initialization
     // =========================
     if (startBtn && music) {
         startBtn.addEventListener("click", () => {
@@ -24,7 +36,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     // =========================
-    // Initial Animations
+    // 2. Initial Animations Setup
     // =========================
     createParticles();
     initializeAnimation();
@@ -32,7 +44,163 @@ document.addEventListener("DOMContentLoaded", () => {
     setupPhotoCaptionAnimations();
 
     // =========================
-    // Floating Particles
+    // 3. Regular Hidden Video Section
+    // =========================
+    if (openVideoBtn && videoWrapper && video && music) {
+        openVideoBtn.addEventListener("click", () => {
+            console.log("🎥 Regular video button clicked");
+
+            openVideoBtn.style.display = "none";
+
+            // Expand container
+            videoWrapper.style.maxHeight = "1200px";
+            videoWrapper.style.opacity = "1";
+            videoWrapper.style.transform = "scale(1)";
+
+            // Store current background music position and pause
+            if (music && !music.paused) {
+                firstVideoMusicPosition = music.currentTime;
+                music.pause();
+                console.log("🎵 Background music paused at position:", firstVideoMusicPosition);
+            }
+
+            // Play video
+            video.currentTime = 0;
+            video.muted = false;
+
+            video.play().catch(err => {
+                console.log("❌ Regular video play blocked:", err);
+                // If video fails to play, resume background music
+                if (music) {
+                    music.currentTime = firstVideoMusicPosition;
+                    music.play().catch(e => console.log("Music resume also blocked:", e));
+                }
+            });
+
+            // Smooth scroll
+            setTimeout(() => {
+                videoWrapper.scrollIntoView({
+                    behavior: "smooth",
+                    block: "center"
+                });
+            }, 400);
+        });
+
+        // When regular video ends, resume background music FROM WHERE IT LEFT OFF
+        video.addEventListener("ended", () => {
+            console.log("🎵 Regular video ended, resuming background music");
+
+            if (music) {
+                music.currentTime = firstVideoMusicPosition;
+                music.play().catch(err => {
+                    console.log("❌ Music resume blocked:", err);
+                });
+                console.log("🎵 Background music resumed from:", firstVideoMusicPosition);
+            }
+        });
+    }
+
+    // =========================
+    // 4. Krishna Video Section
+    // =========================
+    if (krishnaVideoBtn && krishnaVideoWrapper && krishnaVideo && music) {
+        krishnaVideoBtn.addEventListener("click", () => {
+            console.log("🎵 Krishna video button clicked");
+
+            // Hide the button
+            krishnaVideoBtn.style.display = "none";
+
+            // Show video wrapper with animation
+            krishnaVideoWrapper.classList.add("show");
+
+            // Store current background music position and pause
+            if (music && !music.paused) {
+                bgMusicPosition = music.currentTime;
+                music.pause();
+                console.log("🎵 Background music paused at position:", bgMusicPosition);
+            }
+
+            // Reset and play Krishna video
+            krishnaVideo.currentTime = 0;
+            krishnaVideo.volume = 1;
+            krishnaVideo.muted = false;
+            
+            const playPromise = krishnaVideo.play();
+            
+            if (playPromise !== undefined) {
+                playPromise.catch(err => {
+                    console.log("❌ Krishna video play blocked:", err);
+                    // If video fails to play, resume background music from stored position
+                    if (music) {
+                        music.currentTime = bgMusicPosition;
+                        music.play().catch(e => console.log("Music resume also blocked:", e));
+                    }
+                });
+            }
+
+            // Smooth scroll to video
+            setTimeout(() => {
+                krishnaVideoWrapper.scrollIntoView({
+                    behavior: "smooth",
+                    block: "center"
+                });
+            }, 500);
+        });
+
+        // When Krishna video ends, resume background music FROM WHERE IT LEFT OFF
+        krishnaVideo.addEventListener("ended", () => {
+            console.log("🎵 Krishna video ended, resuming background music");
+            
+            // Hide video wrapper after a delay
+            setTimeout(() => {
+                krishnaVideoWrapper.classList.remove("show");
+                krishnaVideoBtn.style.display = "inline-block";
+            }, 2000);
+
+            // Resume background music FROM STORED POSITION
+            if (music) {
+                music.currentTime = bgMusicPosition;
+                music.play().catch(err => {
+                    console.log("❌ Music resume blocked:", err);
+                });
+                console.log("🎵 Background music resumed from:", bgMusicPosition);
+            }
+        });
+
+        // Handle video pause/stop - if user manually pauses Krishna video
+        krishnaVideo.addEventListener("pause", () => {
+            console.log("🎵 Krishna video paused by user");
+        });
+        
+        // Optional: If user clicks outside or closes video early, resume music
+        document.addEventListener('click', (e) => {
+            if (krishnaVideoWrapper.classList.contains('show') && 
+                !krishnaVideoWrapper.contains(e.target) && 
+                e.target !== krishnaVideoBtn && 
+                e.target !== krishnaVideo) {
+                
+                // User clicked outside the video, resume music
+                if (!krishnaVideo.paused) {
+                    krishnaVideo.pause();
+                }
+                
+                // Hide video wrapper
+                krishnaVideoWrapper.classList.remove("show");
+                krishnaVideoBtn.style.display = "inline-block";
+                
+                // Resume background music
+                if (music) {
+                    music.currentTime = bgMusicPosition;
+                    music.play().catch(err => {
+                        console.log("❌ Music resume blocked:", err);
+                    });
+                }
+            }
+        });
+    }
+
+    // =========================
+    // 5. Floating Particles
     // =========================
     function createParticles() {
         const particles = document.getElementById('particles');
@@ -55,7 +223,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     // =========================
-    // Fade-in Animation Initialization
+    // 6. Fade-in Animation Initialization
     // =========================
     function initializeAnimation() {
         const fadeElements = document.querySelectorAll('.fade-in');
@@ -65,37 +233,36 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     // =========================
-    // Photo Caption Animations
+    // 7. Photo Caption Animations
     // =========================
     function setupPhotoCaptionAnimations() {
-  const observer = new IntersectionObserver(
-    entries => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          const overlay = entry.target.querySelector('.photo-overlay');
-          const caption = entry.target.querySelector('.photo-caption');
+        const observer = new IntersectionObserver(
+            entries => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const overlay = entry.target.querySelector('.photo-overlay');
+                        const caption = entry.target.querySelector('.photo-caption');
 
-          overlay?.classList.add('aos-animate-caption');
-          caption?.classList.add('aos-animate');
+                        overlay?.classList.add('aos-animate-caption');
+                        caption?.classList.add('aos-animate');
 
-          observer.unobserve(entry.target); // 🔥 important
-        }
-      });
-    },
-    {
-      threshold: 0.15,
-      rootMargin: "0px 0px -80px 0px"
+                        observer.unobserve(entry.target);
+                    }
+                });
+            },
+            {
+                threshold: 0.15,
+                rootMargin: "0px 0px -80px 0px"
+            }
+        );
+
+        document.querySelectorAll('.photo-card').forEach(card => {
+            observer.observe(card);
+        });
     }
-  );
-
-  document.querySelectorAll('.photo-card').forEach(card => {
-    observer.observe(card);
-  });
-}
-
 
     // =========================
-    // Scroll Animations
+    // 8. Scroll Animations
     // =========================
     function setupScrollAnimations() {
         const observerOptions = { threshold: 0.1, rootMargin: '0px 0px -50px 0px' };
@@ -121,7 +288,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     // =========================
-    // Animate Message Text
+    // 9. Animate Message Text
     // =========================
     function animateMessageText() {
         const messageTexts = document.querySelectorAll('.message-text');
@@ -133,7 +300,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     // =========================
-    // Like Button & Floating Heart
+    // 10. Like Button & Floating Heart
     // =========================
     function toggleLike(button) {
         const heartIcon = button.querySelector('.heart-icon');
@@ -175,26 +342,26 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     // =========================
-    // Parallax & Particle Scroll
+    // 11. Parallax & Particle Scroll
     // =========================
-   window.addEventListener('scroll', () => {
-    document.querySelectorAll('.photo-card img').forEach(img => {
-        const rect = img.getBoundingClientRect();
-        const windowHeight = window.innerHeight;
+    window.addEventListener('scroll', () => {
+        document.querySelectorAll('.photo-card img').forEach(img => {
+            const rect = img.getBoundingClientRect();
+            const windowHeight = window.innerHeight;
 
-        // percent of the element visible in viewport
-        let visible = 1 - (rect.top / windowHeight);
-        if(visible > 1) visible = 1;
-        if(visible < 0) visible = 0;
+            // percent of the element visible in viewport
+            let visible = 1 - (rect.top / windowHeight);
+            if(visible > 1) visible = 1;
+            if(visible < 0) visible = 0;
 
-        // scale and opacity based on scroll position
-        img.style.transform = `scale(${0.8 + 0.2 * visible}) rotate(${(1 - visible) * -5}deg)`;
-        img.style.opacity = visible;
+            // scale and opacity based on scroll position
+            img.style.transform = `scale(${0.8 + 0.2 * visible}) rotate(${(1 - visible) * -5}deg)`;
+            img.style.opacity = visible;
+        });
     });
-});
 
     // =========================
-    // Mouse & Touch Movement for Floating Hearts
+    // 12. Mouse & Touch Movement for Floating Hearts
     // =========================
     function moveFloatingHearts(xRatio, yRatio) {
         const moveX = (xRatio - 0.5) * 20;
@@ -210,7 +377,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     // =========================
-    // Button Ripple Effect
+    // 13. Button Ripple Effect
     // =========================
     document.querySelectorAll('button').forEach(button => {
         button.addEventListener('click', function(e) {
@@ -241,6 +408,9 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     });
 
+    // =========================
+    // 14. Add CSS Animations
+    // =========================
     const style = document.createElement('style');
     style.textContent = `
         @keyframes ripple {
@@ -254,7 +424,7 @@ document.addEventListener("DOMContentLoaded", () => {
     document.head.appendChild(style);
 
     // =========================
-    // Photo Enter Animation
+    // 15. Photo Enter Animation
     // =========================
     const photoObserver = new IntersectionObserver(entries => {
         entries.forEach(entry => {
@@ -267,7 +437,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
     document.querySelectorAll('.photo-card').forEach(card => photoObserver.observe(card));
 
- const container = document.getElementById("loveHeartWrapper");
+    // =========================
+    // 16. I Love You Heart Animation
+    // =========================
+    const container = document.getElementById("loveHeartWrapper");
     if (container) {
         const total = 80;
         const texts = [];
@@ -313,85 +486,46 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
+    // =========================
+    // 17. Time Counter for Proposal Date
+    // =========================
+    const proposalDate = new Date("2025-10-22T00:00:00");
+
+    function updateTimeCounter() {
+        const now = new Date();
+        const diff = now - proposalDate;
+
+        if (diff < 0) {
+            document.getElementById("timeCounter").innerText =
+                "The day I will always remember 🤍";
+            return;
+        }
+
+        const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
+        const minutes = Math.floor((diff / (1000 * 60)) % 60);
+        const seconds = Math.floor((diff / 1000) % 60);
+
+        document.getElementById("timeCounter").innerText =
+            `${days} days, ${hours} hours, ${minutes} minutes, ${seconds} seconds`;
+    }
+
+    setInterval(updateTimeCounter, 1000);
+    updateTimeCounter();
 });
 
+// =========================
+// Additional Event Listeners
+// =========================
 
-const proposalDate = new Date("2025-10-22T00:00:00");
-
-function updateTimeCounter() {
-  const now = new Date();
-  const diff = now - proposalDate;
-
-  if (diff < 0) {
-    document.getElementById("timeCounter").innerText =
-      "The day I will always remember 🤍";
-    return;
-  }
-
-  const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-  const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
-  const minutes = Math.floor((diff / (1000 * 60)) % 60);
-  const seconds = Math.floor((diff / 1000) % 60);
-
-  document.getElementById("timeCounter").innerText =
-    `${days} days, ${hours} hours, ${minutes} minutes, ${seconds} seconds`;
-}
-
-setInterval(updateTimeCounter, 1000);
-updateTimeCounter();
-
-
-
-
-document.addEventListener("DOMContentLoaded", () => {
-  const openVideoBtn = document.getElementById("openVideoBtn");
-  const videoWrapper = document.getElementById("videoWrapper");
-  const video = document.getElementById("specialVideo");
-  const bgMusic = document.getElementById("bgMusic");
-
-  if (!openVideoBtn || !videoWrapper || !video) {
-    console.log("❌ Video elements not found");
-    return;
-  }
-
-  openVideoBtn.addEventListener("click", () => {
-    console.log("🎥 Video button clicked");
-
-    openVideoBtn.style.display = "none";
-
-    // Expand container
-    videoWrapper.style.maxHeight = "1200px";
-    videoWrapper.style.opacity = "1";
-    videoWrapper.style.transform = "scale(1)";
-
-    // Pause background music
-    if (bgMusic) bgMusic.pause();
-
-    // Play video
-    video.currentTime = 0;
-    video.muted = false;
-
-    video.play().catch(err => {
-      console.log("❌ Video play blocked:", err);
-    });
-
-    // Smooth scroll
-    setTimeout(() => {
-      videoWrapper.scrollIntoView({
-        behavior: "smooth",
-        block: "center"
-      });
-    }, 400);
-  });
-// 🔥 THIS IS THE MISSING PIECE
-  video.addEventListener("ended", () => {
-    console.log("🎵 Video ended, resuming background music");
-
-    if (bgMusic) {
-     
-      bgMusic.play().catch(err => {
-        console.log("❌ Music resume blocked:", err);
-      });
+// Add this at the end for any additional global event listeners
+window.addEventListener('load', () => {
+    console.log("🎉 Valentine's Day website fully loaded!");
+    
+    // Ensure music is ready
+    const music = document.getElementById("bgMusic");
+    if (music) {
+        music.volume = 0.7;
+        console.log("🎵 Background music ready");
     }
-  });
 });
