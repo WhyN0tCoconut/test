@@ -531,3 +531,188 @@ window.addEventListener('load', () => {
         console.log("🎵 Background music ready");
     }
 });
+// =========================
+// 18. Centered Voice Recording Player
+// =========================
+const voiceAudio = document.getElementById('promiseVoice');
+const playVoiceBtn = document.getElementById('playVoiceBtn');
+const pauseVoiceBtn = document.getElementById('pauseVoiceBtn');
+const voiceProgressBar = document.querySelector('.voice-progress-bar-centered');
+const voiceDuration = document.querySelector('.voice-duration-centered');
+const bgMusic = document.getElementById('bgMusic');
+
+// Store original music volume (default is 0.7 based on your code)
+const originalMusicVolume = bgMusic ? bgMusic.volume : 0.7;
+const lowVolumeLevel = 0.20; // Very low volume during voice recording
+
+// Format time function
+function formatTime(seconds) {
+    const mins = Math.floor(seconds / 60);
+    const secs = Math.floor(seconds % 60);
+    return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
+}
+
+// Update progress bar and time
+function updateVoiceProgress() {
+    if (!voiceAudio.duration) return;
+    
+    const percent = (voiceAudio.currentTime / voiceAudio.duration) * 100;
+    voiceProgressBar.style.width = `${percent}%`;
+    voiceDuration.textContent = formatTime(voiceAudio.currentTime);
+}
+
+// Fade music volume down smoothly
+function fadeMusicVolume(targetVolume, duration = 500) {
+    if (!bgMusic) return;
+    
+    const startVolume = bgMusic.volume;
+    const change = targetVolume - startVolume;
+    const startTime = Date.now();
+    
+    function fadeStep() {
+        const elapsed = Date.now() - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+        
+        // Smooth easing function
+        const easedProgress = progress < 0.5 
+            ? 2 * progress * progress 
+            : 1 - Math.pow(-2 * progress + 2, 2) / 2;
+        
+        bgMusic.volume = startVolume + (change * easedProgress);
+        
+        if (progress < 1) {
+            requestAnimationFrame(fadeStep);
+        }
+    }
+    
+    fadeStep();
+}
+
+// Setup voice audio events
+if (voiceAudio && playVoiceBtn && pauseVoiceBtn) {
+    // Set initial duration
+    voiceAudio.addEventListener('loadedmetadata', () => {
+        voiceDuration.textContent = formatTime(voiceAudio.duration);
+    });
+    
+    // Update progress while playing
+    voiceAudio.addEventListener('timeupdate', updateVoiceProgress);
+    
+    // Click progress bar to seek
+    document.querySelector('.voice-progress-centered').addEventListener('click', (e) => {
+        if (!voiceAudio.duration) return;
+        
+        const progressRect = e.currentTarget.getBoundingClientRect();
+        const clickX = e.clientX - progressRect.left;
+        const width = progressRect.width;
+        const percent = clickX / width;
+        
+        voiceAudio.currentTime = percent * voiceAudio.duration;
+        updateVoiceProgress();
+    });
+    
+    // Play button click
+    playVoiceBtn.addEventListener('click', () => {
+        // Smoothly fade background music to low volume
+        if (bgMusic && !bgMusic.paused) {
+            fadeMusicVolume(lowVolumeLevel);
+            console.log("🎵 Background music volume lowered");
+        }
+        
+        // Play voice recording
+        voiceAudio.play()
+            .then(() => {
+                playVoiceBtn.style.display = 'none';
+                pauseVoiceBtn.style.display = 'flex';
+                playVoiceBtn.style.opacity = '0';
+                pauseVoiceBtn.style.opacity = '1';
+            })
+            .catch(err => {
+                console.log("Voice play blocked:", err);
+                // If voice fails to play, restore music volume
+                if (bgMusic) {
+                    fadeMusicVolume(originalMusicVolume);
+                }
+            });
+    });
+    
+    // Pause button click
+    pauseVoiceBtn.addEventListener('click', () => {
+        voiceAudio.pause();
+        pauseVoiceBtn.style.display = 'none';
+        playVoiceBtn.style.display = 'flex';
+        pauseVoiceBtn.style.opacity = '0';
+        playVoiceBtn.style.opacity = '1';
+        
+        // Smoothly restore background music volume
+        if (bgMusic) {
+            fadeMusicVolume(originalMusicVolume);
+            console.log("🎵 Background music volume restored");
+        }
+    });
+    
+    // When voice recording ends
+    voiceAudio.addEventListener('ended', () => {
+        pauseVoiceBtn.style.display = 'none';
+        playVoiceBtn.style.display = 'flex';
+        pauseVoiceBtn.style.opacity = '0';
+        playVoiceBtn.style.opacity = '1';
+        
+        // Reset progress
+        voiceProgressBar.style.width = '0%';
+        voiceDuration.textContent = formatTime(voiceAudio.duration);
+        
+        // Smoothly restore background music volume
+        if (bgMusic) {
+            fadeMusicVolume(originalMusicVolume);
+            console.log("🎵 Background music volume restored after voice");
+        }
+    });
+    
+    // Handle voice audio errors
+    voiceAudio.addEventListener('error', (e) => {
+        console.log("Voice recording error:", e);
+        pauseVoiceBtn.style.display = 'none';
+        playVoiceBtn.style.display = 'flex';
+        pauseVoiceBtn.style.opacity = '0';
+        playVoiceBtn.style.opacity = '1';
+        playVoiceBtn.querySelector('.voice-text-centered').textContent = 'Audio Unavailable';
+        
+        // Restore music volume if there was an error
+        if (bgMusic) {
+            fadeMusicVolume(originalMusicVolume);
+        }
+    });
+    
+    // Also handle when user manually stops audio (clicks elsewhere)
+    voiceAudio.addEventListener('pause', () => {
+        // Only update UI if pause wasn't triggered by our button
+        if (!voiceAudio.ended) {
+            pauseVoiceBtn.style.display = 'none';
+            playVoiceBtn.style.display = 'flex';
+            pauseVoiceBtn.style.opacity = '0';
+            playVoiceBtn.style.opacity = '1';
+            
+            // Restore music volume
+            if (bgMusic) {
+                fadeMusicVolume(originalMusicVolume);
+            }
+        }
+    });
+    
+    // Handle page visibility changes (if user switches tabs)
+    document.addEventListener('visibilitychange', () => {
+        if (document.hidden && !voiceAudio.paused) {
+            voiceAudio.pause();
+            // Restore music volume if user leaves the page
+            if (bgMusic) {
+                fadeMusicVolume(originalMusicVolume);
+            }
+        }
+    });
+    
+    // Smooth transitions for button changes
+    [playVoiceBtn, pauseVoiceBtn].forEach(btn => {
+        btn.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
+    });
+}
