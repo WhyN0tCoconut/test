@@ -532,7 +532,7 @@ window.addEventListener('load', () => {
     }
 });
 // =========================
-// 18. Centered Voice Recording Player
+// 18. Centered Voice Recording Player - Mobile Fixed
 // =========================
 const voiceAudio = document.getElementById('promiseVoice');
 const playVoiceBtn = document.getElementById('playVoiceBtn');
@@ -541,9 +541,12 @@ const voiceProgressBar = document.querySelector('.voice-progress-bar-centered');
 const voiceDuration = document.querySelector('.voice-duration-centered');
 const bgMusic = document.getElementById('bgMusic');
 
-// Store original music volume (default is 0.7 based on your code)
-const originalMusicVolume = bgMusic ? bgMusic.volume : 0.7;
-const lowVolumeLevel = 0.20; // Very low volume during voice recording
+// Store original music volume
+const originalMusicVolume = 0.7;
+const reducedVolumeLevel = 0.35;
+
+// Check if we're on mobile
+const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 
 // Format time function
 function formatTime(seconds) {
@@ -561,35 +564,28 @@ function updateVoiceProgress() {
     voiceDuration.textContent = formatTime(voiceAudio.currentTime);
 }
 
-// Fade music volume down smoothly
-function fadeMusicVolume(targetVolume, duration = 500) {
+// Set music volume
+function setMusicVolume(volume) {
     if (!bgMusic) return;
     
-    const startVolume = bgMusic.volume;
-    const change = targetVolume - startVolume;
-    const startTime = Date.now();
-    
-    function fadeStep() {
-        const elapsed = Date.now() - startTime;
-        const progress = Math.min(elapsed / duration, 1);
-        
-        // Smooth easing function
-        const easedProgress = progress < 0.5 
-            ? 2 * progress * progress 
-            : 1 - Math.pow(-2 * progress + 2, 2) / 2;
-        
-        bgMusic.volume = startVolume + (change * easedProgress);
-        
-        if (progress < 1) {
-            requestAnimationFrame(fadeStep);
-        }
+    try {
+        bgMusic.volume = volume;
+        console.log(`🎵 Music volume set to: ${Math.round(volume * 100)}%`);
+    } catch (err) {
+        console.log("Volume adjustment error:", err);
     }
-    
-    fadeStep();
 }
 
 // Setup voice audio events
 if (voiceAudio && playVoiceBtn && pauseVoiceBtn) {
+    // First, update the audio element for mobile
+    if (isMobile) {
+        voiceAudio.setAttribute('playsinline', '');
+        voiceAudio.setAttribute('webkit-playsinline', '');
+        voiceAudio.muted = false;
+        voiceAudio.volume = 1.0;
+    }
+    
     // Set initial duration
     voiceAudio.addEventListener('loadedmetadata', () => {
         voiceDuration.textContent = formatTime(voiceAudio.duration);
@@ -611,29 +607,60 @@ if (voiceAudio && playVoiceBtn && pauseVoiceBtn) {
         updateVoiceProgress();
     });
     
-    // Play button click
-    playVoiceBtn.addEventListener('click', () => {
-        // Smoothly fade background music to low volume
+    // SINGLE Play button click handler (no duplicate)
+    playVoiceBtn.addEventListener('click', function playVoice() {
+        // Reduce background music volume
         if (bgMusic && !bgMusic.paused) {
-            fadeMusicVolume(lowVolumeLevel);
-            console.log("🎵 Background music volume lowered");
+            setMusicVolume(reducedVolumeLevel);
         }
         
+        // Reset audio to start and unmute
+        voiceAudio.currentTime = 0;
+        voiceAudio.muted = false;
+        voiceAudio.volume = 1.0;
+        
         // Play voice recording
-        voiceAudio.play()
-            .then(() => {
-                playVoiceBtn.style.display = 'none';
-                pauseVoiceBtn.style.display = 'flex';
-                playVoiceBtn.style.opacity = '0';
-                pauseVoiceBtn.style.opacity = '1';
-            })
-            .catch(err => {
-                console.log("Voice play blocked:", err);
-                // If voice fails to play, restore music volume
-                if (bgMusic) {
-                    fadeMusicVolume(originalMusicVolume);
-                }
-            });
+        const playPromise = voiceAudio.play();
+        
+        if (playPromise !== undefined) {
+            playPromise
+                .then(() => {
+                    console.log("🎤 Voice recording started");
+                    playVoiceBtn.style.display = 'none';
+                    pauseVoiceBtn.style.display = 'flex';
+                    playVoiceBtn.style.opacity = '0';
+                    pauseVoiceBtn.style.opacity = '1';
+                })
+                .catch(err => {
+                    console.log("Voice play blocked:", err);
+                    
+                    // Mobile fallback: try with user gesture
+                    if (isMobile) {
+                        console.log("Trying mobile fallback...");
+                        // Show a message to user
+                        playVoiceBtn.textContent = "Tap again to play";
+                        
+                        // Remove and re-add event listener
+                        playVoiceBtn.removeEventListener('click', playVoice);
+                        playVoiceBtn.addEventListener('click', function mobileRetry() {
+                            voiceAudio.play()
+                                .then(() => {
+                                    playVoiceBtn.style.display = 'none';
+                                    pauseVoiceBtn.style.display = 'flex';
+                                })
+                                .catch(e => {
+                                    console.log("Mobile retry failed:", e);
+                                    alert("Please enable audio permissions in your browser settings");
+                                });
+                        }, { once: true });
+                    }
+                    
+                    // Restore music volume if voice fails
+                    if (bgMusic) {
+                        setMusicVolume(originalMusicVolume);
+                    }
+                });
+        }
     });
     
     // Pause button click
@@ -644,10 +671,9 @@ if (voiceAudio && playVoiceBtn && pauseVoiceBtn) {
         pauseVoiceBtn.style.opacity = '0';
         playVoiceBtn.style.opacity = '1';
         
-        // Smoothly restore background music volume
+        // Restore background music volume
         if (bgMusic) {
-            fadeMusicVolume(originalMusicVolume);
-            console.log("🎵 Background music volume restored");
+            setMusicVolume(originalMusicVolume);
         }
     });
     
@@ -662,10 +688,9 @@ if (voiceAudio && playVoiceBtn && pauseVoiceBtn) {
         voiceProgressBar.style.width = '0%';
         voiceDuration.textContent = formatTime(voiceAudio.duration);
         
-        // Smoothly restore background music volume
+        // Restore background music volume
         if (bgMusic) {
-            fadeMusicVolume(originalMusicVolume);
-            console.log("🎵 Background music volume restored after voice");
+            setMusicVolume(originalMusicVolume);
         }
     });
     
@@ -676,17 +701,21 @@ if (voiceAudio && playVoiceBtn && pauseVoiceBtn) {
         playVoiceBtn.style.display = 'flex';
         pauseVoiceBtn.style.opacity = '0';
         playVoiceBtn.style.opacity = '1';
-        playVoiceBtn.querySelector('.voice-text-centered').textContent = 'Audio Unavailable';
         
-        // Restore music volume if there was an error
+        // Update button text to show error
+        const voiceText = playVoiceBtn.querySelector('.voice-text-centered');
+        if (voiceText) {
+            voiceText.textContent = 'Audio Error - Tap to retry';
+        }
+        
+        // Restore music volume
         if (bgMusic) {
-            fadeMusicVolume(originalMusicVolume);
+            setMusicVolume(originalMusicVolume);
         }
     });
     
-    // Also handle when user manually stops audio (clicks elsewhere)
+    // Handle when user manually stops audio
     voiceAudio.addEventListener('pause', () => {
-        // Only update UI if pause wasn't triggered by our button
         if (!voiceAudio.ended) {
             pauseVoiceBtn.style.display = 'none';
             playVoiceBtn.style.display = 'flex';
@@ -695,24 +724,61 @@ if (voiceAudio && playVoiceBtn && pauseVoiceBtn) {
             
             // Restore music volume
             if (bgMusic) {
-                fadeMusicVolume(originalMusicVolume);
+                setMusicVolume(originalMusicVolume);
             }
         }
     });
     
-    // Handle page visibility changes (if user switches tabs)
-    document.addEventListener('visibilitychange', () => {
-        if (document.hidden && !voiceAudio.paused) {
-            voiceAudio.pause();
-            // Restore music volume if user leaves the page
-            if (bgMusic) {
-                fadeMusicVolume(originalMusicVolume);
-            }
-        }
-    });
+    // Ensure music volume is set properly
+    if (bgMusic) {
+        bgMusic.volume = originalMusicVolume;
+    }
     
     // Smooth transitions for button changes
     [playVoiceBtn, pauseVoiceBtn].forEach(btn => {
         btn.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
     });
+}
+
+// Mobile-specific audio permission helper
+if (isMobile) {
+    console.log("📱 Mobile device detected");
+    
+    // Helper function to ensure audio can play
+    function ensureAudioCanPlay(audioElement) {
+        return new Promise((resolve) => {
+            // Try to play immediately
+            const playPromise = audioElement.play();
+            
+            if (playPromise !== undefined) {
+                playPromise
+                    .then(() => resolve(true))
+                    .catch(() => {
+                        // If fails, wait for user interaction
+                        const handleInteraction = () => {
+                            audioElement.play()
+                                .then(() => {
+                                    document.removeEventListener('touchstart', handleInteraction);
+                                    document.removeEventListener('click', handleInteraction);
+                                    resolve(true);
+                                })
+                                .catch(() => resolve(false));
+                        };
+                        
+                        document.addEventListener('touchstart', handleInteraction, { once: true });
+                        document.addEventListener('click', handleInteraction, { once: true });
+                    });
+            } else {
+                resolve(true);
+            }
+        });
+    }
+    
+    // Pre-warm audio on first touch
+    document.addEventListener('touchstart', function warmAudio() {
+        if (voiceAudio) {
+            voiceAudio.load(); // Pre-load the audio
+        }
+        document.removeEventListener('touchstart', warmAudio);
+    }, { once: true });
 }
