@@ -532,7 +532,7 @@ window.addEventListener('load', () => {
     }
 });
 // =========================
-// 18. Centered Voice Recording Player - Mobile Volume Fixed
+// 18. Centered Voice Recording Player - Simple Pause/Resume
 // =========================
 const voiceAudio = document.getElementById('promiseVoice');
 const playVoiceBtn = document.getElementById('playVoiceBtn');
@@ -541,11 +541,7 @@ const voiceProgressBar = document.querySelector('.voice-progress-bar-centered');
 const voiceDuration = document.querySelector('.voice-duration-centered');
 const bgMusic = document.getElementById('bgMusic');
 
-// Check if we're on mobile
-const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-
-// For mobile: we'll PAUSE background music during voice playback
-// For desktop: we'll REDUCE volume
+// Store music state
 let wasMusicPlaying = false;
 let musicPosition = 0;
 
@@ -567,7 +563,7 @@ function updateVoiceProgress() {
 
 // Setup voice audio events
 if (voiceAudio && playVoiceBtn && pauseVoiceBtn) {
-    // Set mobile-specific attributes
+    // Set mobile-friendly attributes
     voiceAudio.setAttribute('playsinline', '');
     voiceAudio.setAttribute('webkit-playsinline', '');
     voiceAudio.muted = false;
@@ -575,7 +571,9 @@ if (voiceAudio && playVoiceBtn && pauseVoiceBtn) {
     
     // Set initial duration
     voiceAudio.addEventListener('loadedmetadata', () => {
-        voiceDuration.textContent = formatTime(voiceAudio.duration);
+        if (voiceAudio.duration) {
+            voiceDuration.textContent = formatTime(voiceAudio.duration);
+        }
     });
     
     // Update progress while playing
@@ -595,49 +593,41 @@ if (voiceAudio && playVoiceBtn && pauseVoiceBtn) {
     });
     
     // Play button click
-    playVoiceBtn.addEventListener('click', function playVoice() {
-        console.log("🎵 Play button clicked");
+    playVoiceBtn.addEventListener('click', () => {
+        console.log("▶️ Play button clicked");
         
-        // Handle background music based on device
+        // Pause background music if it's playing
         if (bgMusic && !bgMusic.paused) {
-            if (isMobile) {
-                // On mobile: PAUSE the background music
-                wasMusicPlaying = true;
-                musicPosition = bgMusic.currentTime;
-                bgMusic.pause();
-                console.log("📱 Mobile: Background music paused");
-            } else {
-                // On desktop: REDUCE volume
-                bgMusic.volume = 0.2; // Reduced to 20%
-                console.log("💻 Desktop: Background music volume reduced to 20%");
-            }
+            wasMusicPlaying = true;
+            musicPosition = bgMusic.currentTime;
+            bgMusic.pause();
+            console.log("🎵 Background music paused");
         }
         
-        // Prepare and play voice recording
+        // Play voice recording
         voiceAudio.currentTime = 0;
         
-        // Try to play the voice recording
-        const playPromise = voiceAudio.play();
-        
-        if (playPromise !== undefined) {
-            playPromise
-                .then(() => {
-                    console.log("✅ Voice recording started successfully");
-                    playVoiceBtn.style.display = 'none';
-                    pauseVoiceBtn.style.display = 'flex';
-                })
-                .catch(err => {
-                    console.log("❌ Voice play error:", err);
-                    
-                    // If voice fails to play, restore background music
-                    restoreBackgroundMusic();
-                    
-                    // Show user-friendly error message
-                    if (isMobile) {
-                        alert("Please tap the screen once, then try playing again. Mobile browsers require user interaction for audio.");
-                    }
-                });
-        }
+        voiceAudio.play()
+            .then(() => {
+                console.log("✅ Voice recording started");
+                playVoiceBtn.style.display = 'none';
+                pauseVoiceBtn.style.display = 'flex';
+            })
+            .catch(err => {
+                console.log("❌ Voice play error:", err);
+                
+                // If voice fails, resume background music
+                if (wasMusicPlaying && bgMusic) {
+                    bgMusic.currentTime = musicPosition;
+                    bgMusic.play().catch(e => console.log("Music resume error:", e));
+                    wasMusicPlaying = false;
+                }
+                
+                // Mobile-specific error message
+                if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
+                    alert("Please tap anywhere on the screen first, then try playing the recording again.");
+                }
+            });
     });
     
     // Pause button click
@@ -647,24 +637,22 @@ if (voiceAudio && playVoiceBtn && pauseVoiceBtn) {
         pauseVoiceBtn.style.display = 'none';
         playVoiceBtn.style.display = 'flex';
         
-        // Restore background music
-        restoreBackgroundMusic();
+        // Resume background music if it was playing
+        resumeBackgroundMusic();
     });
     
-    // Function to restore background music
-    function restoreBackgroundMusic() {
-        if (bgMusic) {
-            if (isMobile && wasMusicPlaying) {
-                // On mobile: RESUME from saved position
-                bgMusic.currentTime = musicPosition;
-                bgMusic.play().catch(e => console.log("Music resume error:", e));
-                wasMusicPlaying = false;
-                console.log("📱 Mobile: Background music resumed");
-            } else if (!isMobile) {
-                // On desktop: RESTORE volume
-                bgMusic.volume = 0.7; // Restore to 70%
-                console.log("💻 Desktop: Background music volume restored to 70%");
-            }
+    // Function to resume background music
+    function resumeBackgroundMusic() {
+        if (wasMusicPlaying && bgMusic) {
+            bgMusic.currentTime = musicPosition;
+            bgMusic.play()
+                .then(() => {
+                    console.log("🎵 Background music resumed");
+                    wasMusicPlaying = false;
+                })
+                .catch(err => {
+                    console.log("Music resume error:", err);
+                });
         }
     }
     
@@ -676,10 +664,12 @@ if (voiceAudio && playVoiceBtn && pauseVoiceBtn) {
         
         // Reset progress
         voiceProgressBar.style.width = '0%';
-        voiceDuration.textContent = formatTime(voiceAudio.duration);
+        if (voiceAudio.duration) {
+            voiceDuration.textContent = formatTime(voiceAudio.duration);
+        }
         
-        // Restore background music
-        restoreBackgroundMusic();
+        // Resume background music
+        resumeBackgroundMusic();
     });
     
     // Handle voice audio errors
@@ -688,67 +678,65 @@ if (voiceAudio && playVoiceBtn && pauseVoiceBtn) {
         pauseVoiceBtn.style.display = 'none';
         playVoiceBtn.style.display = 'flex';
         
-        // Restore background music
-        restoreBackgroundMusic();
+        // Resume background music
+        resumeBackgroundMusic();
     });
     
-    // Handle page visibility changes
+    // Handle when user manually stops audio
+    voiceAudio.addEventListener('pause', () => {
+        if (!voiceAudio.ended) {
+            console.log("⏸️ Voice recording paused manually");
+            pauseVoiceBtn.style.display = 'none';
+            playVoiceBtn.style.display = 'flex';
+            resumeBackgroundMusic();
+        }
+    });
+    
+    // Handle page visibility changes (if user switches tabs)
     document.addEventListener('visibilitychange', () => {
         if (document.hidden && !voiceAudio.paused) {
+            console.log("📄 Page hidden, pausing voice");
             voiceAudio.pause();
             pauseVoiceBtn.style.display = 'none';
             playVoiceBtn.style.display = 'flex';
-            restoreBackgroundMusic();
+            resumeBackgroundMusic();
         }
     });
-    
-    // Ensure voice audio can play on mobile
-    if (isMobile) {
-        console.log("📱 Mobile optimization active");
-        
-        // Create a user interaction handler for mobile
-        function handleFirstInteraction() {
-            console.log("👆 Mobile user interaction detected");
-            
-            // Try to play/pause quickly to unlock audio
-            voiceAudio.play().then(() => {
-                voiceAudio.pause();
-                voiceAudio.currentTime = 0;
-            }).catch(e => console.log("Mobile audio unlock attempt:", e));
-            
-            // Remove listeners after first interaction
-            document.removeEventListener('touchstart', handleFirstInteraction);
-            document.removeEventListener('click', handleFirstInteraction);
-        }
-        
-        // Listen for first user interaction
-        document.addEventListener('touchstart', handleFirstInteraction, { once: true });
-        document.addEventListener('click', handleFirstInteraction, { once: true });
-    }
     
     // Smooth transitions for button changes
     [playVoiceBtn, pauseVoiceBtn].forEach(btn => {
         btn.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
     });
-    
-    // Debug: Log audio state
-    console.log("🎵 Voice audio element:", voiceAudio);
-    console.log("🎵 Background music element:", bgMusic);
-    console.log("📱 Is mobile device:", isMobile);
 }
 
-// Additional mobile audio helper
+// Mobile audio unlock helper
 document.addEventListener('DOMContentLoaded', () => {
-    // Mobile: Pre-load audio files on user interaction
-    if (isMobile) {
-        const preloadAudio = () => {
-            if (voiceAudio) {
-                voiceAudio.load();
-                console.log("📱 Audio pre-loaded for mobile");
-            }
-        };
+    // Only for mobile devices
+    if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
+        console.log("📱 Mobile device detected - adding audio unlock");
         
-        // Pre-load on first user interaction
-        document.addEventListener('touchstart', preloadAudio, { once: true });
+        // Function to unlock audio on first touch
+        function unlockAudio() {
+            console.log("👆 First touch detected - unlocking audio");
+            
+            // Try to play/pause quickly to unlock audio
+            if (voiceAudio) {
+                voiceAudio.play()
+                    .then(() => {
+                        voiceAudio.pause();
+                        voiceAudio.currentTime = 0;
+                        console.log("✅ Audio unlocked successfully");
+                    })
+                    .catch(e => console.log("Audio unlock attempt failed:", e));
+            }
+            
+            // Remove this listener after first touch
+            document.removeEventListener('touchstart', unlockAudio);
+            document.removeEventListener('click', unlockAudio);
+        }
+        
+        // Listen for first user interaction
+        document.addEventListener('touchstart', unlockAudio, { once: true });
+        document.addEventListener('click', unlockAudio, { once: true });
     }
 });
