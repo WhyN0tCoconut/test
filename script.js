@@ -64,506 +64,496 @@ document.addEventListener("DOMContentLoaded", () => {
     setupScrollAnimations();
     setupPhotoCaptionAnimations();
 
- // =========================
-// 3. Regular Hidden Video Section - UPDATED with pause/resume
-// =========================
-if (openVideoBtn && videoWrapper && video && music) {
-    let shouldManageMusicForSpecialVideo = false;
-    
-    openVideoBtn.addEventListener("click", () => {
-        console.log("🎥 Regular video button clicked");
-
-        openVideoBtn.style.display = "none";
-
-        // Expand container
-        videoWrapper.style.maxHeight = "1200px";
-        videoWrapper.style.opacity = "1";
-        videoWrapper.style.transform = "scale(1)";
-
-        // Store current background music position and pause
+    // =========================
+    // Helper function to handle music pause/resume consistently
+    // =========================
+    function pauseBackgroundMusicForMedia(mediaType) {
         if (music && isMusicPlaying) {
-            firstVideoMusicPosition = music.currentTime;
-            music.pause();
-            isMusicPlaying = false;
-            shouldManageMusicForSpecialVideo = true;
-            console.log("🎵 Background music paused for special video at position:", firstVideoMusicPosition);
-        }
-
-        // Play video
-        video.currentTime = 0;
-        video.muted = false;
-
-        video.play().catch(err => {
-            console.log("❌ Special video play blocked:", err);
-            // If video fails to play, resume background music
-            if (music && shouldManageMusicForSpecialVideo) {
-                music.currentTime = firstVideoMusicPosition;
-                music.play()
-                    .then(() => {
-                        isMusicPlaying = true;
-                        shouldManageMusicForSpecialVideo = false;
-                    })
-                    .catch(e => console.log("Music resume also blocked:", e));
+            switch(mediaType) {
+                case 'regularVideo':
+                    firstVideoMusicPosition = music.currentTime;
+                    break;
+                case 'krishnaVideo':
+                    bgMusicPosition = music.currentTime;
+                    break;
+                case 'voice':
+                    voiceMusicPosition = music.currentTime;
+                    break;
             }
-        });
-
-        // Smooth scroll
-        setTimeout(() => {
-            videoWrapper.scrollIntoView({
-                behavior: "smooth",
-                block: "center"
-            });
-        }, 400);
-    });
-
-    // When special video plays, pause music if it was resumed
-    video.addEventListener("play", () => {
-        console.log("🎥 Special video playing");
-        
-        // If music was resumed while video was paused, pause it again
-        if (music && isMusicPlaying && shouldManageMusicForSpecialVideo) {
-            firstVideoMusicPosition = music.currentTime;
             music.pause();
             isMusicPlaying = false;
-            console.log("🎵 Background music paused again for special video at:", firstVideoMusicPosition);
+            console.log(`🎵 Background music paused for ${mediaType}`);
         }
-    });
+    }
 
-    // When special video is paused, resume music
-    video.addEventListener("pause", () => {
-        console.log("🎥 Special video paused");
-        
-        // Resume background music if we're managing it for this video
-        if (music && shouldManageMusicForSpecialVideo) {
-            music.currentTime = firstVideoMusicPosition;
-            music.play()
-                .then(() => {
-                    isMusicPlaying = true;
-                    console.log("🎵 Background music resumed from pause at:", firstVideoMusicPosition);
-                })
-                .catch(err => {
-                    console.log("❌ Music resume blocked:", err);
-                });
-        }
-    });
-
-    // When special video ends, resume background music FROM WHERE IT LEFT OFF
-    video.addEventListener("ended", () => {
-        console.log("🎥 Special video ended, resuming background music");
-
-        // Resume background music if we're managing it for this video
-        if (music && shouldManageMusicForSpecialVideo) {
-            music.currentTime = firstVideoMusicPosition;
-            music.play()
-                .then(() => {
-                    isMusicPlaying = true;
-                    shouldManageMusicForSpecialVideo = false;
-                    console.log("🎵 Background music resumed from:", firstVideoMusicPosition);
-                })
-                .catch(err => {
-                    console.log("❌ Music resume blocked:", err);
-                });
-        }
-    });
-}
-// =========================
-// 4. Krishna Video Section - COMPLETE FIX
-// =========================
-if (krishnaVideoBtn && krishnaVideoWrapper && krishnaVideo && music) {
-    let videoWasPlaying = false; // Track if video was playing before pause
-    
-    krishnaVideoBtn.addEventListener("click", () => {
-        console.log("🎵 Krishna video button clicked");
-
-        // Hide the button
-        krishnaVideoBtn.style.display = "none";
-
-        // Show video wrapper with animation
-        krishnaVideoWrapper.classList.add("show");
-
-        // Store current background music position and pause
-        if (music && isMusicPlaying) {
-            bgMusicPosition = music.currentTime;
-            music.pause();
-            isMusicPlaying = false;
-            console.log("🎵 Background music paused at position:", bgMusicPosition);
-        }
-
-        // Reset and play Krishna video
-        krishnaVideo.currentTime = 0;
-        krishnaVideo.volume = 1;
-        krishnaVideo.muted = false;
-        
-        const playPromise = krishnaVideo.play();
-        
-        if (playPromise !== undefined) {
-            playPromise.catch(err => {
-                console.log("❌ Krishna video play blocked:", err);
-                // If video fails to play, resume background music from stored position
-                if (music) {
-                    music.currentTime = bgMusicPosition;
-                    music.play()
-                        .then(() => {
-                            isMusicPlaying = true;
-                        })
-                        .catch(e => console.log("Music resume also blocked:", e));
-                }
-            });
-        }
-
-        // Smooth scroll to video
-        setTimeout(() => {
-            krishnaVideoWrapper.scrollIntoView({
-                behavior: "smooth",
-                block: "center"
-            });
-        }, 500);
-    });
-
-    // Track when video starts playing - PAUSE MUSIC
-    krishnaVideo.addEventListener("play", () => {
-        videoWasPlaying = true;
-        console.log("🎵 Krishna video started playing");
-        
-        // If music is playing, pause it and store position
-        if (music && isMusicPlaying) {
-            bgMusicPosition = music.currentTime;
-            music.pause();
-            isMusicPlaying = false;
-            console.log("🎵 Background music paused for video at position:", bgMusicPosition);
-        }
-    });
-
-    // Track when video is paused by user - RESUME MUSIC
-    krishnaVideo.addEventListener("pause", () => {
-        console.log("🎵 Krishna video paused by user");
-        
-        if (videoWasPlaying) {
-            // Resume background music ONLY if video was playing before pause
-            if (music) {
-                music.currentTime = bgMusicPosition;
-                music.play()
-                    .then(() => {
-                        isMusicPlaying = true;
-                        console.log("🎵 Background music resumed from pause at:", bgMusicPosition);
-                    })
-                    .catch(err => {
-                        console.log("❌ Music resume blocked:", err);
-                    });
-            }
-        }
-        videoWasPlaying = false;
-    });
-
-    // When Krishna video ends, resume background music FROM WHERE IT LEFT OFF
-    krishnaVideo.addEventListener("ended", () => {
-        console.log("🎵 Krishna video ended, resuming background music");
-        videoWasPlaying = false;
-
-        // Resume background music FROM STORED POSITION
+    function resumeBackgroundMusicForMedia(mediaType) {
         if (music) {
-            music.currentTime = bgMusicPosition;
-            music.play()
-                .then(() => {
-                    isMusicPlaying = true;
-                    console.log("🎵 Background music resumed from:", bgMusicPosition);
-                })
-                .catch(err => {
-                    console.log("❌ Music resume blocked:", err);
-                });
-        }
-    });
-    
-    // Optional: If user clicks outside or closes video early, resume music
-    document.addEventListener('click', (e) => {
-        if (krishnaVideoWrapper.classList.contains('show') && 
-            !krishnaVideoWrapper.contains(e.target) && 
-            e.target !== krishnaVideoBtn && 
-            e.target !== krishnaVideo) {
-            
-            // User clicked outside the video, resume music
-            if (!krishnaVideo.paused) {
-                krishnaVideo.pause();
+            let position = 0;
+            switch(mediaType) {
+                case 'regularVideo':
+                    position = firstVideoMusicPosition;
+                    break;
+                case 'krishnaVideo':
+                    position = bgMusicPosition;
+                    break;
+                case 'voice':
+                    position = voiceMusicPosition;
+                    break;
             }
+            music.currentTime = position;
+            music.play()
+                .then(() => {
+                    isMusicPlaying = true;
+                    console.log(`🎵 Background music resumed for ${mediaType} from position: ${position}`);
+                })
+                .catch(err => {
+                    console.log(`❌ Music resume blocked for ${mediaType}:`, err);
+                });
+        }
+    }
+
+    // =========================
+    // 3. Regular Hidden Video Section - IMPROVED
+    // =========================
+    if (openVideoBtn && videoWrapper && video && music) {
+        let shouldManageMusicForSpecialVideo = false;
+        let isRegularVideoPlaying = false;
+        
+        openVideoBtn.addEventListener("click", () => {
+            console.log("🎥 Regular video button clicked");
+
+            openVideoBtn.style.display = "none";
+
+            // Expand container
+            videoWrapper.style.maxHeight = "1200px";
+            videoWrapper.style.opacity = "1";
+            videoWrapper.style.transform = "scale(1)";
+
+            // Pause background music
+            pauseBackgroundMusicForMedia('regularVideo');
+            shouldManageMusicForSpecialVideo = true;
+
+            // Play video
+            video.currentTime = 0;
+            video.muted = false;
+
+            video.play()
+                .then(() => {
+                    isRegularVideoPlaying = true;
+                })
+                .catch(err => {
+                    console.log("❌ Special video play blocked:", err);
+                    // If video fails to play, resume background music
+                    if (shouldManageMusicForSpecialVideo) {
+                        resumeBackgroundMusicForMedia('regularVideo');
+                        shouldManageMusicForSpecialVideo = false;
+                    }
+                });
+
+            // Smooth scroll
+            setTimeout(() => {
+                videoWrapper.scrollIntoView({
+                    behavior: "smooth",
+                    block: "center"
+                });
+            }, 400);
+        });
+
+        // Handle video play events
+        video.addEventListener("play", () => {
+            console.log("🎥 Regular video playing");
+            isRegularVideoPlaying = true;
             
-          
-            
-            // Resume background music
-            if (music) {
-                music.currentTime = bgMusicPosition;
-                music.play()
-                    .then(() => {
-                        isMusicPlaying = true;
-                    })
-                    .catch(err => {
-                        console.log("❌ Music resume blocked:", err);
-                    });
+            // Ensure music is paused when video plays
+            if (music && isMusicPlaying && shouldManageMusicForSpecialVideo) {
+                pauseBackgroundMusicForMedia('regularVideo');
             }
-        }
-    });
-}
-// =========================
-// 5. Voice Recording Playback with Music Control - FIXED VERSION
-// =========================
-if (promiseVoice && playVoiceBtn && pauseVoiceBtn && music) {
-    
-    // Function to format time
-    function formatTime(seconds) {
-        const mins = Math.floor(seconds / 60);
-        const secs = Math.floor(seconds % 60);
-        return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
+        });
+
+        // Handle video pause events
+        video.addEventListener("pause", () => {
+            console.log("🎥 Regular video paused");
+            isRegularVideoPlaying = false;
+            
+            // Resume music if video was playing
+            if (shouldManageMusicForSpecialVideo) {
+                resumeBackgroundMusicForMedia('regularVideo');
+            }
+        });
+
+        // Handle video seeking
+        video.addEventListener("seeking", () => {
+            console.log("🎥 Regular video seeking");
+            // Pause music while seeking if video is playing
+            if (isRegularVideoPlaying && music && isMusicPlaying) {
+                pauseBackgroundMusicForMedia('regularVideo');
+            }
+        });
+
+        // Handle video end
+        video.addEventListener("ended", () => {
+            console.log("🎥 Regular video ended");
+            isRegularVideoPlaying = false;
+            
+            if (shouldManageMusicForSpecialVideo) {
+                resumeBackgroundMusicForMedia('regularVideo');
+                shouldManageMusicForSpecialVideo = false;
+            }
+        });
     }
-    
-    // Update progress bar and time
-    function updateProgress() {
-        if (!promiseVoice.duration) return;
+
+    // =========================
+    // 4. Krishna Video Section - IMPROVED
+    // =========================
+    if (krishnaVideoBtn && krishnaVideoWrapper && krishnaVideo && music) {
+        let isKrishnaVideoPlaying = false;
         
-        const progress = (promiseVoice.currentTime / promiseVoice.duration) * 100;
-        voiceProgressBar.style.width = `${progress}%`;
-        voiceDuration.textContent = formatTime(promiseVoice.currentTime);
-    }
-    
-    // Initialize voice recording
-    function initVoiceRecording() {
-        // Reset progress bar
-        voiceProgressBar.style.width = "0%";
-        voiceDuration.textContent = "0:00";
-        
-        // Show play button, hide pause button
-        playVoiceBtn.style.display = "flex";
-        pauseVoiceBtn.style.display = "none";
-        
-        // Reset state
-        isVoicePlaying = false;
-    }
-    
-    // Track if we're seeking (clicking progress bar)
-    let isSeeking = false;
-    let seekTimeout = null;
-    
-    // Play voice recording
-    playVoiceBtn.addEventListener("click", () => {
-        console.log("🎤 Voice recording play button clicked");
-        
-        // Check if music is playing
-        musicWasPlayingBeforeVoice = isMusicPlaying;
-        
-        // Store current background music position and pause
-        if (music && isMusicPlaying) {
-            voiceMusicPosition = music.currentTime;
-            music.pause();
-            isMusicPlaying = false;
-            console.log("🎵 Background music paused for voice recording at:", voiceMusicPosition);
-        } else if (music) {
-            // If music is not playing, store current position anyway
-            voiceMusicPosition = music.currentTime;
-            console.log("🎵 Background music not playing, stored position:", voiceMusicPosition);
-        }
-        
-        // Play the voice recording
-        promiseVoice.volume = 1;
-        
-        promiseVoice.play()
-            .then(() => {
-                console.log("🎤 Voice recording started/resumed");
-                playVoiceBtn.style.display = "none";
-                pauseVoiceBtn.style.display = "flex";
-                isVoicePlaying = true;
-                
-                // Ensure music is paused
-                if (music && !music.paused) {
-                    music.pause();
-                    isMusicPlaying = false;
-                }
-                
-                // Start progress updates
-                promiseVoice.addEventListener("timeupdate", updateProgress);
-            })
-            .catch(err => {
-                console.log("❌ Voice recording play blocked:", err);
-                // If voice recording fails to play, resume background music if it was playing
-                if (music && musicWasPlayingBeforeVoice) {
-                    music.currentTime = voiceMusicPosition;
-                    music.play()
-                        .then(() => {
-                            isMusicPlaying = true;
-                        })
-                        .catch(e => console.log("Music resume also blocked:", e));
-                }
-            });
-    });
-    
-    // Pause voice recording
-    pauseVoiceBtn.addEventListener("click", () => {
-        console.log("🎤 Voice recording pause button clicked");
-        
-        promiseVoice.pause();
-        pauseVoiceBtn.style.display = "none";
-        playVoiceBtn.style.display = "flex";
-        isVoicePlaying = false;
-        
-        // Remove progress update listener
-        promiseVoice.removeEventListener("timeupdate", updateProgress);
-        
-        // Resume background music if it was playing before voice
-        if (music && musicWasPlayingBeforeVoice) {
-            music.currentTime = voiceMusicPosition;
-            music.play()
+        krishnaVideoBtn.addEventListener("click", () => {
+            console.log("🎵 Krishna video button clicked");
+
+            // Hide the button
+            krishnaVideoBtn.style.display = "none";
+
+            // Show video wrapper with animation
+            krishnaVideoWrapper.classList.add("show");
+
+            // Pause background music
+            pauseBackgroundMusicForMedia('krishnaVideo');
+
+            // Reset and play Krishna video
+            krishnaVideo.currentTime = 0;
+            krishnaVideo.volume = 1;
+            krishnaVideo.muted = false;
+            
+            krishnaVideo.play()
                 .then(() => {
-                    isMusicPlaying = true;
-                    console.log("🎵 Background music resumed from pause at:", voiceMusicPosition);
+                    isKrishnaVideoPlaying = true;
                 })
                 .catch(err => {
-                    console.log("❌ Music resume blocked after pause:", err);
+                    console.log("❌ Krishna video play blocked:", err);
+                    // If video fails to play, resume background music
+                    resumeBackgroundMusicForMedia('krishnaVideo');
                 });
+
+            // Smooth scroll to video
+            setTimeout(() => {
+                krishnaVideoWrapper.scrollIntoView({
+                    behavior: "smooth",
+                    block: "center"
+                });
+            }, 500);
+        });
+
+        // Handle video play
+        krishnaVideo.addEventListener("play", () => {
+            console.log("🎵 Krishna video started playing");
+            isKrishnaVideoPlaying = true;
+            
+            // Ensure music is paused
+            if (music && isMusicPlaying) {
+                pauseBackgroundMusicForMedia('krishnaVideo');
+            }
+        });
+
+        // Handle video pause
+        krishnaVideo.addEventListener("pause", () => {
+            console.log("🎵 Krishna video paused by user");
+            isKrishnaVideoPlaying = false;
+            
+            // Resume music if video was playing
+            resumeBackgroundMusicForMedia('krishnaVideo');
+        });
+
+        // Handle video seeking
+        krishnaVideo.addEventListener("seeking", () => {
+            console.log("🎵 Krishna video seeking");
+            // Pause music while seeking if video is playing
+            if (isKrishnaVideoPlaying && music && isMusicPlaying) {
+                pauseBackgroundMusicForMedia('krishnaVideo');
+            }
+        });
+
+        // Handle video end
+        krishnaVideo.addEventListener("ended", () => {
+            console.log("🎵 Krishna video ended");
+            isKrishnaVideoPlaying = false;
+            resumeBackgroundMusicForMedia('krishnaVideo');
+        });
+    }
+
+    // =========================
+    // 5. Voice Recording Playback with Music Control - COMPLETELY REWRITTEN
+    // =========================
+    if (promiseVoice && playVoiceBtn && pauseVoiceBtn && music) {
+        
+        // Function to format time
+        function formatTime(seconds) {
+            const mins = Math.floor(seconds / 60);
+            const secs = Math.floor(seconds % 60);
+            return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
         }
-    });
-    
-    // When voice recording ends, resume background music
-    promiseVoice.addEventListener("ended", () => {
-        console.log("🎤 Voice recording ended, resuming background music");
         
-        pauseVoiceBtn.style.display = "none";
-        playVoiceBtn.style.display = "flex";
-        isVoicePlaying = false;
+        // Update progress bar and time
+        function updateProgress() {
+            if (!promiseVoice.duration) return;
+            
+            const progress = (promiseVoice.currentTime / promiseVoice.duration) * 100;
+            voiceProgressBar.style.width = `${progress}%`;
+            voiceDuration.textContent = formatTime(promiseVoice.currentTime);
+        }
         
-        // Remove progress update listener
-        promiseVoice.removeEventListener("timeupdate", updateProgress);
+        // Initialize voice recording
+        function initVoiceRecording() {
+            // Reset progress bar
+            voiceProgressBar.style.width = "0%";
+            voiceDuration.textContent = "0:00";
+            
+            // Show play button, hide pause button
+            playVoiceBtn.style.display = "flex";
+            pauseVoiceBtn.style.display = "none";
+            
+            // Reset state
+            isVoicePlaying = false;
+        }
         
-        // Reset progress bar
-        voiceProgressBar.style.width = "0%";
-        voiceDuration.textContent = "0:00";
+        // Track seeking state
+        let isSeeking = false;
+        let isUserInteracting = false;
         
-        // Resume background music if it was playing before voice
-        if (music && musicWasPlayingBeforeVoice) {
-            music.currentTime = voiceMusicPosition;
-            music.play()
+        // Play voice recording
+        playVoiceBtn.addEventListener("click", () => {
+            console.log("🎤 Voice recording play button clicked");
+            
+            // Check if music is playing
+            musicWasPlayingBeforeVoice = isMusicPlaying;
+            
+            // Pause background music
+            pauseBackgroundMusicForMedia('voice');
+            
+            // Play the voice recording
+            promiseVoice.volume = 1;
+            
+            promiseVoice.play()
                 .then(() => {
-                    isMusicPlaying = true;
-                    console.log("🎵 Background music resumed after voice ended from:", voiceMusicPosition);
+                    console.log("🎤 Voice recording started");
+                    playVoiceBtn.style.display = "none";
+                    pauseVoiceBtn.style.display = "flex";
+                    isVoicePlaying = true;
+                    
+                    // Start progress updates
+                    promiseVoice.addEventListener("timeupdate", updateProgress);
                 })
                 .catch(err => {
-                    console.log("❌ Music resume blocked after voice ended:", err);
+                    console.log("❌ Voice recording play blocked:", err);
+                    // If voice recording fails to play, resume background music
+                    if (musicWasPlayingBeforeVoice) {
+                        resumeBackgroundMusicForMedia('voice');
+                    }
                 });
-        }
-        
-        // Reset voice recording to beginning for next play
-        promiseVoice.currentTime = 0;
-    });
-    
-    // Handle user clicking progress bar to seek
-    const voiceProgress = document.querySelector(".voice-progress-centered");
-    if (voiceProgress) {
-        voiceProgress.addEventListener("mousedown", () => {
-            isSeeking = true; // User started seeking
         });
         
-        voiceProgress.addEventListener("mouseup", () => {
-            isSeeking = false; // User finished seeking
+        // Pause voice recording
+        pauseVoiceBtn.addEventListener("click", () => {
+            console.log("🎤 Voice recording pause button clicked");
             
-            // Clear any existing timeout
-            if (seekTimeout) clearTimeout(seekTimeout);
+            promiseVoice.pause();
+            pauseVoiceBtn.style.display = "none";
+            playVoiceBtn.style.display = "flex";
+            isVoicePlaying = false;
             
-            // Set a short timeout before allowing music to resume
-            seekTimeout = setTimeout(() => {
+            // Remove progress update listener
+            promiseVoice.removeEventListener("timeupdate", updateProgress);
+            
+            // Resume background music if it was playing before voice
+            if (musicWasPlayingBeforeVoice) {
+                resumeBackgroundMusicForMedia('voice');
+            }
+        });
+        
+        // Handle voice recording end
+        promiseVoice.addEventListener("ended", () => {
+            console.log("🎤 Voice recording ended");
+            
+            pauseVoiceBtn.style.display = "none";
+            playVoiceBtn.style.display = "flex";
+            isVoicePlaying = false;
+            
+            // Remove progress update listener
+            promiseVoice.removeEventListener("timeupdate", updateProgress);
+            
+            // Reset progress bar
+            voiceProgressBar.style.width = "0%";
+            voiceDuration.textContent = "0:00";
+            
+            // Resume background music if it was playing before voice
+            if (musicWasPlayingBeforeVoice) {
+                resumeBackgroundMusicForMedia('voice');
+            }
+            
+            // Reset voice recording to beginning for next play
+            promiseVoice.currentTime = 0;
+        });
+        
+        // Handle user interaction with progress bar
+        const voiceProgress = document.querySelector(".voice-progress-centered");
+        if (voiceProgress) {
+            // Mouse/touch events for dragging
+            voiceProgress.addEventListener("mousedown", startSeeking);
+            voiceProgress.addEventListener("touchstart", startSeeking);
+            
+            voiceProgress.addEventListener("mousemove", handleSeeking);
+            voiceProgress.addEventListener("touchmove", handleSeeking);
+            
+            voiceProgress.addEventListener("mouseup", endSeeking);
+            voiceProgress.addEventListener("touchend", endSeeking);
+            voiceProgress.addEventListener("mouseleave", endSeeking);
+            
+            // Click event for direct jumps
+            voiceProgress.addEventListener("click", handleProgressClick);
+        }
+        
+        function startSeeking(e) {
+            isSeeking = true;
+            isUserInteracting = true;
+            
+            // Pause music when seeking starts
+            if (isVoicePlaying && music && isMusicPlaying) {
+                pauseBackgroundMusicForMedia('voice');
+            }
+            
+            // Pause voice during drag
+            if (!promiseVoice.paused) {
+                promiseVoice.pause();
+            }
+            
+            handleSeekPosition(e);
+        }
+        
+        function handleSeeking(e) {
+            if (isSeeking) {
+                handleSeekPosition(e);
+            }
+        }
+        
+        function endSeeking() {
+            if (isSeeking) {
                 isSeeking = false;
-                console.log("🎤 Seek operation completed");
-            }, 300);
-        });
+                
+                // If voice was playing before seeking, resume it
+                if (isVoicePlaying) {
+                    setTimeout(() => {
+                        promiseVoice.play()
+                            .then(() => {
+                                console.log("🎤 Voice recording resumed after seeking");
+                                // Ensure music stays paused while voice plays
+                                if (music && !music.paused) {
+                                    pauseBackgroundMusicForMedia('voice');
+                                }
+                            })
+                            .catch(err => {
+                                console.log("❌ Failed to resume after seeking:", err);
+                            });
+                    }, 100);
+                }
+                
+                // Reset user interaction flag after delay
+                setTimeout(() => {
+                    isUserInteracting = false;
+                }, 500);
+            }
+        }
         
-        voiceProgress.addEventListener("click", (e) => {
+        function handleSeekPosition(e) {
             if (!promiseVoice.duration) return;
             
             const rect = voiceProgress.getBoundingClientRect();
-            const pos = (e.clientX - rect.left) / rect.width;
+            let clientX;
+            
+            if (e.type.includes('touch')) {
+                clientX = e.touches[0].clientX;
+            } else {
+                clientX = e.clientX;
+            }
+            
+            const pos = Math.max(0, Math.min(1, (clientX - rect.left) / rect.width));
             const newTime = pos * promiseVoice.duration;
             
-            console.log("🎤 Seeking to position:", newTime);
-            
-            // Pause music immediately when seeking starts
-            if (music && !music.paused && isVoicePlaying) {
-                voiceMusicPosition = music.currentTime;
-                music.pause();
-                isMusicPlaying = false;
-                console.log("🎵 Background music paused for seeking");
-            }
-            
-            // Set the new time
             promiseVoice.currentTime = newTime;
             updateProgress();
-            
-            // If voice was playing before seeking, continue playing from new position
-            if (isVoicePlaying) {
-                setTimeout(() => {
-                    promiseVoice.play()
-                        .then(() => {
-                            console.log("🎤 Voice recording resumed from new position");
-                            // Keep music paused while voice plays
-                            if (music && !music.paused) {
-                                music.pause();
-                                isMusicPlaying = false;
-                            }
-                        })
-                        .catch(err => {
-                            console.log("❌ Failed to play after seeking:", err);
-                        });
-                }, 50);
+        }
+        
+        function handleProgressClick(e) {
+            if (!isUserInteracting) { // Only handle if not already dragging
+                if (!promiseVoice.duration) return;
+                
+                const rect = voiceProgress.getBoundingClientRect();
+                const clientX = e.clientX || (e.touches ? e.touches[0].clientX : 0);
+                const pos = Math.max(0, Math.min(1, (clientX - rect.left) / rect.width));
+                const newTime = pos * promiseVoice.duration;
+                
+                console.log("🎤 Clicked to position:", newTime);
+                
+                // Pause music if voice will play from this position
+                if (isVoicePlaying && music && isMusicPlaying) {
+                    pauseBackgroundMusicForMedia('voice');
+                }
+                
+                promiseVoice.currentTime = newTime;
+                updateProgress();
+                
+                // If voice was playing, continue playing from new position
+                if (isVoicePlaying) {
+                    setTimeout(() => {
+                        promiseVoice.play()
+                            .then(() => {
+                                console.log("🎤 Voice recording resumed from clicked position");
+                            })
+                            .catch(err => {
+                                console.log("❌ Failed to play after click:", err);
+                            });
+                    }, 50);
+                }
+            }
+        }
+        
+        // Handle voice seeking event
+        promiseVoice.addEventListener("seeking", () => {
+            console.log("🎤 Voice recording seeking");
+            // Pause music while seeking if voice is playing
+            if (isVoicePlaying && music && isMusicPlaying) {
+                pauseBackgroundMusicForMedia('voice');
             }
         });
-    }
-    
-    // Handle pause event - ONLY resume music if pause wasn't caused by seeking
-    promiseVoice.addEventListener("pause", (e) => {
-        // Don't handle pause events during seeking
-        if (isSeeking) {
-            console.log("🎤 Ignoring pause event during seeking");
-            return;
-        }
         
-        // Only resume music if voice was actually playing and user manually paused
-        if (isVoicePlaying && music && musicWasPlayingBeforeVoice) {
-            console.log("🎤 Voice recording manually paused, resuming music");
+        // Handle voice play event
+        promiseVoice.addEventListener("play", () => {
+            console.log("🎤 Voice recording play event");
+            isVoicePlaying = true;
             
-            // Small delay to ensure this isn't a seek operation
-            setTimeout(() => {
-                if (!isSeeking) {
-                    music.currentTime = voiceMusicPosition;
-                    music.play()
-                        .then(() => {
-                            isMusicPlaying = true;
-                        })
-                        .catch(err => {
-                            console.log("❌ Music resume blocked:", err);
-                        });
-                }
-            }, 100);
-        }
-    });
-    
-    // Handle play event after seeking
-    promiseVoice.addEventListener("play", () => {
-        console.log("🎤 Voice recording play event");
+            // Ensure music is paused when voice plays
+            if (music && isMusicPlaying) {
+                pauseBackgroundMusicForMedia('voice');
+            }
+        });
         
-        // When voice starts playing (including after seeking), ensure music is paused
-        if (music && !music.paused) {
-            voiceMusicPosition = music.currentTime;
-            music.pause();
-            isMusicPlaying = false;
-            console.log("🎵 Background music paused because voice is playing");
-        }
+        // Handle voice pause event (only for manual pauses, not seeking)
+        promiseVoice.addEventListener("pause", () => {
+            // Only resume music if this is a manual pause (not during seeking)
+            if (!isSeeking && !isUserInteracting && musicWasPlayingBeforeVoice) {
+                console.log("🎤 Voice recording manually paused, resuming music");
+                resumeBackgroundMusicForMedia('voice');
+            }
+        });
         
-        isVoicePlaying = true;
-    });
-    
-    // Initialize with total duration if available
-    promiseVoice.addEventListener("loadedmetadata", () => {
-        console.log("🎤 Voice recording duration:", promiseVoice.duration);
+        // Initialize with total duration if available
+        promiseVoice.addEventListener("loadedmetadata", () => {
+            console.log("🎤 Voice recording duration:", promiseVoice.duration);
+            initVoiceRecording();
+        });
+        
+        // Initialize on page load
         initVoiceRecording();
-    });
-    
-    // Initialize on page load
-    initVoiceRecording();
-}
+    }
 
     // =========================
     // 6. Floating Particles
