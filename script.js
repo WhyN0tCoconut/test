@@ -16,9 +16,17 @@ document.addEventListener("DOMContentLoaded", () => {
     const videoWrapper = document.getElementById("videoWrapper");
     const video = document.getElementById("specialVideo");
     
+    // Voice recording elements
+    const promiseVoice = document.getElementById("promiseVoice");
+    const playVoiceBtn = document.getElementById("playVoiceBtn");
+    const pauseVoiceBtn = document.getElementById("pauseVoiceBtn");
+    const voiceProgressBar = document.querySelector(".voice-progress-bar-centered");
+    const voiceDuration = document.querySelector(".voice-duration-centered");
+    
     // Variables to store music playback positions
     let bgMusicPosition = 0;
     let firstVideoMusicPosition = 0;
+    let voiceMusicPosition = 0; // Added for voice recording
 
     // =========================
     // 1. Start Button & Audio Initialization
@@ -202,7 +210,117 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     // =========================
-    // 5. Floating Particles
+    // 5. Voice Recording Playback with Music Control
+    // =========================
+    if (promiseVoice && playVoiceBtn && pauseVoiceBtn && music) {
+        
+        // Function to format time
+        function formatTime(seconds) {
+            const mins = Math.floor(seconds / 60);
+            const secs = Math.floor(seconds % 60);
+            return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
+        }
+        
+        // Update progress bar and time
+        function updateProgress() {
+            if (!promiseVoice.duration) return;
+            
+            const progress = (promiseVoice.currentTime / promiseVoice.duration) * 100;
+            voiceProgressBar.style.width = `${progress}%`;
+            voiceDuration.textContent = formatTime(promiseVoice.currentTime);
+        }
+        
+        // Play voice recording
+        playVoiceBtn.addEventListener("click", () => {
+            console.log("🎤 Voice recording play button clicked");
+            
+            // Store current background music position and pause
+            if (music && !music.paused) {
+                voiceMusicPosition = music.currentTime;
+                music.pause();
+                console.log("🎵 Background music paused for voice recording at:", voiceMusicPosition);
+            }
+            
+            // Play the voice recording
+            promiseVoice.play()
+                .then(() => {
+                    console.log("🎤 Voice recording started");
+                    playVoiceBtn.style.display = "none";
+                    pauseVoiceBtn.style.display = "flex";
+                    
+                    // Start progress updates
+                    promiseVoice.addEventListener("timeupdate", updateProgress);
+                })
+                .catch(err => {
+                    console.log("❌ Voice recording play blocked:", err);
+                    // If voice recording fails to play, resume background music
+                    if (music) {
+                        music.currentTime = voiceMusicPosition;
+                        music.play().catch(e => console.log("Music resume also blocked:", e));
+                    }
+                });
+        });
+        
+        // Pause voice recording
+        pauseVoiceBtn.addEventListener("click", () => {
+            console.log("🎤 Voice recording pause button clicked");
+            
+            promiseVoice.pause();
+            pauseVoiceBtn.style.display = "none";
+            playVoiceBtn.style.display = "flex";
+            
+            // Resume background music if it was playing before
+            if (music && voiceMusicPosition !== null) {
+                music.currentTime = voiceMusicPosition;
+                music.play().catch(err => {
+                    console.log("❌ Music resume blocked after pause:", err);
+                });
+                console.log("🎵 Background music resumed from pause at:", voiceMusicPosition);
+            }
+        });
+        
+        // When voice recording ends, resume background music
+        promiseVoice.addEventListener("ended", () => {
+            console.log("🎤 Voice recording ended, resuming background music");
+            
+            pauseVoiceBtn.style.display = "none";
+            playVoiceBtn.style.display = "flex";
+            
+            // Reset progress bar
+            voiceProgressBar.style.width = "0%";
+            voiceDuration.textContent = "0:00";
+            
+            // Resume background music FROM STORED POSITION
+            if (music && voiceMusicPosition !== null) {
+                music.currentTime = voiceMusicPosition;
+                music.play().catch(err => {
+                    console.log("❌ Music resume blocked after voice ended:", err);
+                });
+                console.log("🎵 Background music resumed after voice ended from:", voiceMusicPosition);
+            }
+        });
+        
+        // Handle user clicking progress bar to seek
+        const voiceProgress = document.querySelector(".voice-progress-centered");
+        if (voiceProgress) {
+            voiceProgress.addEventListener("click", (e) => {
+                if (!promiseVoice.duration) return;
+                
+                const rect = voiceProgress.getBoundingClientRect();
+                const pos = (e.clientX - rect.left) / rect.width;
+                promiseVoice.currentTime = pos * promiseVoice.duration;
+                updateProgress();
+            });
+        }
+        
+        // Initialize with total duration if available
+        promiseVoice.addEventListener("loadedmetadata", () => {
+            console.log("🎤 Voice recording duration:", promiseVoice.duration);
+        });
+    }
+
+    // =========================
+    // 6. Floating Particles
     // =========================
     function createParticles() {
         const particles = document.getElementById('particles');
@@ -225,7 +343,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     // =========================
-    // 6. Fade-in Animation Initialization
+    // 7. Fade-in Animation Initialization
     // =========================
     function initializeAnimation() {
         const fadeElements = document.querySelectorAll('.fade-in');
@@ -235,7 +353,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     // =========================
-    // 7. Photo Caption Animations
+    // 8. Photo Caption Animations
     // =========================
     function setupPhotoCaptionAnimations() {
         const observer = new IntersectionObserver(
@@ -264,7 +382,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     // =========================
-    // 8. Scroll Animations
+    // 9. Scroll Animations
     // =========================
     function setupScrollAnimations() {
         const observerOptions = { threshold: 0.1, rootMargin: '0px 0px -50px 0px' };
@@ -290,7 +408,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     // =========================
-    // 9. Animate Message Text
+    // 10. Animate Message Text
     // =========================
     function animateMessageText() {
         const messageTexts = document.querySelectorAll('.message-text');
@@ -302,7 +420,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     // =========================
-    // 10. Like Button & Floating Heart
+    // 11. Like Button & Floating Heart
     // =========================
     function toggleLike(button) {
         const heartIcon = button.querySelector('.heart-icon');
@@ -344,7 +462,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     // =========================
-    // 11. Parallax & Particle Scroll
+    // 12. Parallax & Particle Scroll
     // =========================
     window.addEventListener('scroll', () => {
         document.querySelectorAll('.photo-card img').forEach(img => {
@@ -363,7 +481,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     // =========================
-    // 12. Mouse & Touch Movement for Floating Hearts
+    // 13. Mouse & Touch Movement for Floating Hearts
     // =========================
     function moveFloatingHearts(xRatio, yRatio) {
         const moveX = (xRatio - 0.5) * 20;
@@ -379,7 +497,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     // =========================
-    // 13. Button Ripple Effect
+    // 14. Button Ripple Effect
     // =========================
     document.querySelectorAll('button').forEach(button => {
         button.addEventListener('click', function(e) {
@@ -411,7 +529,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     // =========================
-    // 14. Add CSS Animations
+    // 15. Add CSS Animations
     // =========================
     const style = document.createElement('style');
     style.textContent = `
@@ -426,7 +544,7 @@ document.addEventListener("DOMContentLoaded", () => {
     document.head.appendChild(style);
 
     // =========================
-    // 15. Photo Enter Animation
+    // 16. Photo Enter Animation
     // =========================
     const photoObserver = new IntersectionObserver(entries => {
         entries.forEach(entry => {
@@ -440,7 +558,7 @@ document.addEventListener("DOMContentLoaded", () => {
     document.querySelectorAll('.photo-card').forEach(card => photoObserver.observe(card));
 
     // =========================
-    // 16. I Love You Heart Animation
+    // 17. I Love You Heart Animation
     // =========================
     const container = document.getElementById("loveHeartWrapper");
     if (container) {
@@ -489,7 +607,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     // =========================
-    // 17. Time Counter for Proposal Date
+    // 18. Time Counter for Proposal Date
     // =========================
     const proposalDate = new Date("2025-10-22T00:00:00");
 
@@ -529,214 +647,5 @@ window.addEventListener('load', () => {
     if (music) {
         music.volume = 0.7;
         console.log("🎵 Background music ready");
-    }
-});
-// =========================
-// 18. Centered Voice Recording Player - Simple Pause/Resume
-// =========================
-const voiceAudio = document.getElementById('promiseVoice');
-const playVoiceBtn = document.getElementById('playVoiceBtn');
-const pauseVoiceBtn = document.getElementById('pauseVoiceBtn');
-const voiceProgressBar = document.querySelector('.voice-progress-bar-centered');
-const voiceDuration = document.querySelector('.voice-duration-centered');
-const bgMusic = document.getElementById('bgMusic');
-
-// Store music state
-let wasMusicPlaying = false;
-let musicPosition = 0;
-
-// Format time function
-function formatTime(seconds) {
-    const mins = Math.floor(seconds / 60);
-    const secs = Math.floor(seconds % 60);
-    return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
-}
-
-// Update progress bar and time
-function updateVoiceProgress() {
-    if (!voiceAudio.duration) return;
-    
-    const percent = (voiceAudio.currentTime / voiceAudio.duration) * 100;
-    voiceProgressBar.style.width = `${percent}%`;
-    voiceDuration.textContent = formatTime(voiceAudio.currentTime);
-}
-
-// Setup voice audio events
-if (voiceAudio && playVoiceBtn && pauseVoiceBtn) {
-    // Set mobile-friendly attributes
-    voiceAudio.setAttribute('playsinline', '');
-    voiceAudio.setAttribute('webkit-playsinline', '');
-    voiceAudio.muted = false;
-    voiceAudio.volume = 1.0;
-    
-    // Set initial duration
-    voiceAudio.addEventListener('loadedmetadata', () => {
-        if (voiceAudio.duration) {
-            voiceDuration.textContent = formatTime(voiceAudio.duration);
-        }
-    });
-    
-    // Update progress while playing
-    voiceAudio.addEventListener('timeupdate', updateVoiceProgress);
-    
-    // Click progress bar to seek
-    document.querySelector('.voice-progress-centered').addEventListener('click', (e) => {
-        if (!voiceAudio.duration) return;
-        
-        const progressRect = e.currentTarget.getBoundingClientRect();
-        const clickX = e.clientX - progressRect.left;
-        const width = progressRect.width;
-        const percent = clickX / width;
-        
-        voiceAudio.currentTime = percent * voiceAudio.duration;
-        updateVoiceProgress();
-    });
-    
-    // Play button click
-    playVoiceBtn.addEventListener('click', () => {
-        console.log("▶️ Play button clicked");
-        
-        // Pause background music if it's playing
-        if (bgMusic && !bgMusic.paused) {
-            wasMusicPlaying = true;
-            musicPosition = bgMusic.currentTime;
-            bgMusic.pause();
-            console.log("🎵 Background music paused");
-        }
-        
-        // Play voice recording
-        voiceAudio.currentTime = 0;
-        
-        voiceAudio.play()
-            .then(() => {
-                console.log("✅ Voice recording started");
-                playVoiceBtn.style.display = 'none';
-                pauseVoiceBtn.style.display = 'flex';
-            })
-            .catch(err => {
-                console.log("❌ Voice play error:", err);
-                
-                // If voice fails, resume background music
-                if (wasMusicPlaying && bgMusic) {
-                    bgMusic.currentTime = musicPosition;
-                    bgMusic.play().catch(e => console.log("Music resume error:", e));
-                    wasMusicPlaying = false;
-                }
-                
-                // Mobile-specific error message
-                if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
-                    alert("Please tap anywhere on the screen first, then try playing the recording again.");
-                }
-            });
-    });
-    
-    // Pause button click
-    pauseVoiceBtn.addEventListener('click', () => {
-        console.log("⏸️ Pause button clicked");
-        voiceAudio.pause();
-        pauseVoiceBtn.style.display = 'none';
-        playVoiceBtn.style.display = 'flex';
-        
-        // Resume background music if it was playing
-        resumeBackgroundMusic();
-    });
-    
-    // Function to resume background music
-    function resumeBackgroundMusic() {
-        if (wasMusicPlaying && bgMusic) {
-            bgMusic.currentTime = musicPosition;
-            bgMusic.play()
-                .then(() => {
-                    console.log("🎵 Background music resumed");
-                    wasMusicPlaying = false;
-                })
-                .catch(err => {
-                    console.log("Music resume error:", err);
-                });
-        }
-    }
-    
-    // When voice recording ends
-    voiceAudio.addEventListener('ended', () => {
-        console.log("✅ Voice recording ended");
-        pauseVoiceBtn.style.display = 'none';
-        playVoiceBtn.style.display = 'flex';
-        
-        // Reset progress
-        voiceProgressBar.style.width = '0%';
-        if (voiceAudio.duration) {
-            voiceDuration.textContent = formatTime(voiceAudio.duration);
-        }
-        
-        // Resume background music
-        resumeBackgroundMusic();
-    });
-    
-    // Handle voice audio errors
-    voiceAudio.addEventListener('error', (e) => {
-        console.log("❌ Voice audio error:", e);
-        pauseVoiceBtn.style.display = 'none';
-        playVoiceBtn.style.display = 'flex';
-        
-        // Resume background music
-        resumeBackgroundMusic();
-    });
-    
-    // Handle when user manually stops audio
-    voiceAudio.addEventListener('pause', () => {
-        if (!voiceAudio.ended) {
-            console.log("⏸️ Voice recording paused manually");
-            pauseVoiceBtn.style.display = 'none';
-            playVoiceBtn.style.display = 'flex';
-            resumeBackgroundMusic();
-        }
-    });
-    
-    // Handle page visibility changes (if user switches tabs)
-    document.addEventListener('visibilitychange', () => {
-        if (document.hidden && !voiceAudio.paused) {
-            console.log("📄 Page hidden, pausing voice");
-            voiceAudio.pause();
-            pauseVoiceBtn.style.display = 'none';
-            playVoiceBtn.style.display = 'flex';
-            resumeBackgroundMusic();
-        }
-    });
-    
-    // Smooth transitions for button changes
-    [playVoiceBtn, pauseVoiceBtn].forEach(btn => {
-        btn.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
-    });
-}
-
-// Mobile audio unlock helper
-document.addEventListener('DOMContentLoaded', () => {
-    // Only for mobile devices
-    if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
-        console.log("📱 Mobile device detected - adding audio unlock");
-        
-        // Function to unlock audio on first touch
-        function unlockAudio() {
-            console.log("👆 First touch detected - unlocking audio");
-            
-            // Try to play/pause quickly to unlock audio
-            if (voiceAudio) {
-                voiceAudio.play()
-                    .then(() => {
-                        voiceAudio.pause();
-                        voiceAudio.currentTime = 0;
-                        console.log("✅ Audio unlocked successfully");
-                    })
-                    .catch(e => console.log("Audio unlock attempt failed:", e));
-            }
-            
-            // Remove this listener after first touch
-            document.removeEventListener('touchstart', unlockAudio);
-            document.removeEventListener('click', unlockAudio);
-        }
-        
-        // Listen for first user interaction
-        document.addEventListener('touchstart', unlockAudio, { once: true });
-        document.addEventListener('click', unlockAudio, { once: true });
     }
 });
