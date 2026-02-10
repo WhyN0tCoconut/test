@@ -42,7 +42,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
             // Play audio (mobile-friendly)
             music.currentTime = 0;
-            music.volume = 0.7;
+            music.volume = 0.5;
             music.play()
                 .then(() => {
                     console.log("🎵 Background music started");
