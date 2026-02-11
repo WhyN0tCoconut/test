@@ -562,9 +562,9 @@ document.addEventListener("DOMContentLoaded", () => {
         const particles = document.getElementById('particles');
         if (!particles) return;
 
-        const particleEmojis = ['❤️', '❤️‍🩹', '💝', '💍', '🎉', '🦋','✨', '🌸', '💞'];
+        const particleEmojis = ['💝', '🦋', '🌸'];
 
-        for (let i = 0; i < 15; i++) {
+        for (let i = 0; i < 10; i++) {
             const particle = document.createElement('div');
             particle.className = 'particle';
             particle.innerHTML = particleEmojis[Math.floor(Math.random() * particleEmojis.length)];
